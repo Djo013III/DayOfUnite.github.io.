@@ -3,10 +3,13 @@
 // Например: image: 'https://example.com/smuta.jpg' -->
 // Если ссылки нет — оставь пустые кавычки: image: '' -->
 // ============================================================ -->
+// ============================================================ -->
+// ВНИМАНИЕ: ЧТОБЫ ДОБАВИТЬ КАРТИНКУ ФРОНТУ, ВСТАВЬ ССЫЛКУ В ПОЛЕ image -->
+// ============================================================ -->
 const fronts = [
   {
     id: 'smuta',
-    image: '', // <-- ССЫЛКА НА КАРТИНКУ ФРОНТА «СМУТНОЕ ВРЕМЯ»
+    image: '', // <-- ССЫЛКА НА КАРТИНКУ
     title: 'Смутное время',
     desc: 'История ополчения Минина и Пожарского',
     questions: [
@@ -21,7 +24,7 @@ const fronts = [
   },
   {
     id: 'russia',
-    image: '', // <-- ССЫЛКА НА КАРТИНКУ ФРОНТА «РОССИЯ СЕГОДНЯ»
+    image: '', // <-- ССЫЛКА НА КАРТИНКУ
     title: 'Россия сегодня',
     desc: 'Символы и праздники страны',
     questions: [
@@ -36,7 +39,7 @@ const fronts = [
   },
   {
     id: 'kostroma',
-    image: '', // <-- ССЫЛКА НА КАРТИНКУ ФРОНТА «КОСТРОМСКОЙ КРАЙ»
+    image: '', // <-- ССЫЛКА НА КАРТИНКУ
     title: 'Костромской край',
     desc: 'Честняков и народные промыслы',
     questions: [
@@ -118,7 +121,7 @@ function shuffle(arr) {
   return a;
 }
 
-// ===== ЭКРАН ВЫБОРА =====
+// ===== ЭКРАН ВЫБОРА (БЕЗ ЭМОДЗИ) =====
 function renderFronts() {
   const container = $('fronts-container');
   if (!container) return;
@@ -165,7 +168,6 @@ function resumeFront(front) {
 
   $('front-name').textContent = front.title;
 
-  // Картинка фронта в бою
   const imgWrap = $('front-image-wrap');
   const img = $('front-image');
   if (front.image && imgWrap && img) {
@@ -178,7 +180,7 @@ function resumeFront(front) {
 
   renderBanner();
   updateHud();
-  updateBanner(); // <-- ВАЖНО: заполняем знамя сразу при входе
+  updateBanner(); // Заполняем знамя сразу при входе
   renderNextQuestion();
   showScreen('screen-battle');
 }
@@ -255,6 +257,7 @@ function renderNextQuestion() {
   state.answered = false;
 }
 
+// ===== ОТВЕТ =====
 function answer(btn, isCorrect, q, questionIdx) {
   if (state.answered) return;
   state.answered = true;
@@ -263,6 +266,8 @@ function answer(btn, isCorrect, q, questionIdx) {
 
   const front = state.currentFront;
   const prog = state.progress[front.id];
+  
+  // ВАЖНО: Добавляем индекс в answeredIndices В ЛЮБОМ СЛУЧАЕ
   prog.answeredIndices.push(questionIdx);
 
   if (isCorrect) {
@@ -272,10 +277,20 @@ function answer(btn, isCorrect, q, questionIdx) {
     updateBanner();
     updateHud();
     showNote(q.note);
+
+    // ПРОВЕРКА НА МГНОВЕННУЮ ПОБЕДУ
+    if (prog.correctCount === 7) {
+      setTimeout(() => {
+        showVictory();
+      }, 1200);
+      return;
+    }
+
     setTimeout(() => {
       renderFronts();
       showScreen('screen-select');
     }, 1200);
+
   } else {
     btn.classList.add('wrong');
     prog.errorCount++;
@@ -287,6 +302,7 @@ function answer(btn, isCorrect, q, questionIdx) {
     setTimeout(() => {
       if (prog.errorCount === 1) {
         $('breach-text').textContent = `Фронт «${front.title}» прорван. Прогресс сохранён — вернись и продолжи с того же места.`;
+        showScreen('screen-breach'); // (исправлено на screen-breach ниже)
         showScreen('screen-breach');
       } else {
         showScreen('screen-retreat');
@@ -310,7 +326,7 @@ function showVictory() {
   showScreen('screen-victory');
 }
 
-// ===== ЩИТ НА ПОБЕДУ =====
+// ===== ЩИТ НА ПОБЕДУ (ЗАМЕНИЛ ОРЛА НА МЕДВЕДЯ) =====
 function drawVictoryCanvas() {
   const canvas = $('victory-canvas');
   if (!canvas) return;
@@ -409,7 +425,7 @@ function drawVictoryCanvas() {
   if (vkImg) vkImg.setAttribute('content', dataUrl);
 }
 
-// ===== ЩИТ С МЕЧАМИ =====
+// ===== ЩИТ С МЕЧАМИ (ЗАМЕНИЛ ОРЛА НА МЕДВЕДЯ) =====
 function drawIntroShield() {
   const canvas = document.getElementById('intro-canvas');
   if (!canvas) return;
@@ -511,11 +527,12 @@ function drawIntroShield() {
   shieldPath(18);
   ctx.stroke();
 
+  // МЕДВЕДЬ ВМЕСТО ОРЛА
   ctx.fillStyle = 'rgba(232,209,138,0.85)';
   ctx.font = 'bold 38px Georgia, serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('🦅', cx, h / 2 + 5);
+  ctx.fillText('🐻', cx, h / 2 + 5);
 
   const rivets = [
     [left + 18, top + 18],

@@ -21,7 +21,6 @@
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
-<!-- ДЫМ ПО НИЗУ ЭКРАНА -->
 <canvas id="smoke-canvas"></canvas>
 
 <div id="app">
@@ -46,7 +45,7 @@
   <section id="screen-select" class="screen">
     <header class="hud">
       <span class="hud-title">Летопись</span>
-      <span class="hud-item">Попытка: <b id="attempt-count">1</b></span>
+      <span class="hud-item">Попыток: <b id="attempt-count">1</b></span>
     </header>
     <h1 class="main-title">Держи оборону</h1>
     <p class="subtitle">Выбери фронт. Семь вопросов. Ошибка — и фронт прорван, но прогресс сохранится.</p>
@@ -61,6 +60,11 @@
       <span class="hud-item">Ошибок: <b id="error-count">0</b></span>
     </header>
 
+    <!-- КАРТИНКА ФРОНТА (из внешней ссылки) -->
+    <div class="front-image-wrap" id="front-image-wrap" hidden>
+      <img id="front-image" alt="">
+    </div>
+
     <div class="banner" id="banner"></div>
 
     <div class="question-box">
@@ -74,14 +78,14 @@
     </div>
   </section>
 
-  <!-- ЭКРАН ПОРАЖЕНИЯ (1-я ошибка) -->
+  <!-- ЭКРАН ПОРАЖЕНИЯ -->
   <section id="screen-breach" class="screen">
     <h2 class="result-title">Фронт прорван</h2>
     <p class="result-text" id="breach-text">Враг потеснил ополчение. Прогресс сохранён — вернись и продолжи с того же места.</p>
     <button class="btn" id="btn-back-select">К выбору фронта</button>
   </section>
 
-  <!-- ЭКРАН ОТСТУПЛЕНИЯ (2-я ошибка) -->
+  <!-- ЭКРАН ОТСТУПЛЕНИЯ -->
   <section id="screen-retreat" class="screen">
     <h2 class="result-title">Срочно отступить и перегруппироваться</h2>
     <p class="result-text">Ополчение отходит. Соберись с силами и начни заново.</p>

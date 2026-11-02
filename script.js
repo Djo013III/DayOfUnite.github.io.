@@ -155,12 +155,19 @@ function resumeFront(front) {
   state.correctCount = prog.correctCount;
   state.answered = false;
 
-  if (prog.answeredIndices.length >= 7) {
+    if (prog.answeredIndices.length >= 7) {
     if (prog.correctCount === 7) {
       showVictory();
     } else {
-      resetFrontProgress(front.id);
-      resumeFront(front);
+      // Все вопросы отвечены, но не 7/7 — это значит, что была ошибка.
+      // НЕ сбрасываем прогресс, а показываем экран поражения.
+      if (state.totalErrors === 1) {
+        $('breach-text').textContent = `Фронт «${front.title}» прорван. Прогресс сохранён — вернись и продолжи с того же места.`;
+        showScreen('screen-breach');
+      } else {
+        resetAllProgress();
+        showScreen('screen-retreat');
+      }
     }
     return;
   }
@@ -226,12 +233,18 @@ function renderNextQuestion() {
     }
   }
 
-  if (nextIdx === -1) {
+    if (nextIdx === -1) {
     if (prog.correctCount === 7) {
       showVictory();
     } else {
-      resetFrontProgress(front.id);
-      resumeFront(front);
+      // Вопросы кончились, но не 7/7 — не сбрасываем, показываем поражение
+      if (state.totalErrors === 1) {
+        $('breach-text').textContent = `Фронт «${front.title}» прорван. Прогресс сохранён — вернись и продолжи с того же места.`;
+        showScreen('screen-breach');
+      } else {
+        resetAllProgress();
+        showScreen('screen-retreat');
+      }
     }
     return;
   }

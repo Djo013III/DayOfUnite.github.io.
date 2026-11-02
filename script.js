@@ -1,297 +1,443 @@
-// ===== ДАННЫЕ ФРОНТОВ =====
-const fronts = [
-  {
-    id: 'smuta',
-    icon: '⚔️',
-    title: 'Смутное время',
-    desc: 'История ополчения Минина и Пожарского',
-    questions: [
-      { q: 'Когда отмечают День народного единства?', options: ['4 ноября', '1 января', '12 июня', '9 мая'], correct: 0, note: 'Праздник связан с событиями 1612 года, когда ополчение освободило Москву.' },
-      { q: 'Кто возглавил народное ополчение?', options: ['Минин и Пожарский', 'Пётр I и Иван Грозный', 'Александр Невский и Дмитрий Донской', 'Екатерина II и Павел I'], correct: 0, note: 'Кузьма Минин и князь Дмитрий Пожарский собрали народное ополчение.' },
-      { q: 'От кого освободили Москву в 1612 году?', options: ['От польских интервентов', 'От французов', 'От монголов', 'От шведов'], correct: 0, note: 'Ополчение выдворило из столицы польских интервентов.' },
-      { q: 'Что означает слово «единство» в названии праздника?', options: ['Когда народ вместе', 'Когда все молчат', 'Когда один правит', 'Когда все отдыхают'], correct: 0, note: 'Праздник — про сплочённость народа перед общей бедой.' },
-      { q: 'Где стоит памятник Минину и Пожарскому?', options: ['В Москве на Красной площади', 'В Санкт-Петербурге', 'В Костроме', 'В Казани'], correct: 0, note: 'Памятник стоит в самом центре Москвы.' },
-      { q: 'В каком году произошли эти события?', options: ['1612', '1812', '1945', '2005'], correct: 0, note: 'Ополчение освободило Москву в 1612 году.' },
-      { q: 'Когда в современной России впервые отметили этот праздник?', options: ['В 2005 году', 'В 1991 году', 'В 1612 году', 'В 2020 году'], correct: 0, note: 'Праздник стал государственным и впервые отмечался в 2005 году.' }
-    ]
-  },
-  {
-    id: 'russia',
-    icon: '🦅',
-    title: 'Россия сегодня',
-    desc: 'Символы и праздники страны',
-    questions: [
-      { q: 'Какие цвета у флага России?', options: ['Белый, синий, красный', 'Красный, жёлтый, зелёный', 'Синий, белый, зелёный', 'Чёрный, жёлтый, белый'], correct: 0, note: 'Белый — мир, синий — верность, красный — сила.' },
-      { q: 'Кто изображён на гербе России?', options: ['Двуглавый орёл', 'Медведь', 'Лев', 'Конь'], correct: 0, note: 'Орёл держит скипетр и державу — символы власти.' },
-      { q: 'Как называется главная песня страны?', options: ['Гимн', 'Частушка', 'Колыбельная', 'Марш'], correct: 0, note: 'Гимн — главная песня страны, его слушают стоя.' },
-      { q: 'Какой город — столица России?', options: ['Москва', 'Санкт-Петербург', 'Кострома', 'Казань'], correct: 0, note: 'Москва — столица и самый большой город России.' },
-      { q: 'Что слушают стоя?', options: ['Гимн', 'Сказку', 'Песню о дружбе', 'Тишину'], correct: 0, note: 'Гимн слушают стоя — так выражают уважение к стране.' },
-      { q: 'Что изображено на гербе России?', options: ['Двуглавый орёл', 'Медведь', 'Лев', 'Конь'], correct: 0, note: 'Орёл держит скипетр и державу — символы власти.' },
-      { q: 'Сколько народов живёт в России?', options: ['Более 190', '10', '50', '2'], correct: 0, note: 'Россия — многонациональная страна.' }
-    ]
-  },
-  {
-    id: 'kostroma',
-    icon: '🏺',
-    title: 'Костромской край',
-    desc: 'Честняков и народные промыслы',
-    questions: [
-      { q: 'В каком году родился Ефим Честняков?', options: ['1874', '1900', '1850', '1920'], correct: 0, note: 'Честняков родился в 1874 году.' },
-      { q: 'В какой деревне родился Честняков?', options: ['Шаблово', 'Петровское', 'Красное', 'Галич'], correct: 0, note: 'Шаблово — родная деревня художника.' },
-      { q: 'Что такое петровская игрушка?', options: ['Глиняная свистулька', 'Деревянная кукла', 'Тряпичный мяч', 'Соломенная шляпа'], correct: 0, note: 'Это глиняная свистулька из тёмной глины.' },
-      { q: 'Чем петровская игрушка отличается от других?', options: ['Её не раскрашивают', 'Её делают из дерева', 'Её делают только зимой', 'В неё нельзя свистеть'], correct: 0, note: 'Узор выдавливают прямо в глине, краски не используют.' },
-      { q: 'Какое кружево плетут в Костромской области?', options: ['Галичское', 'Вологодское', 'Елецкое', 'Михайловское'], correct: 0, note: 'Галичское кружево плели из льна и шёлка.' },
-      { q: 'Что делают красносельские мастера?', options: ['Ажурные узоры из проволоки', 'Глиняные свистульки', 'Льняные рубахи', 'Деревянные ложки'], correct: 0, note: 'Это скань — узор из тонкой проволоки, похожий на кружево.' },
-      { q: 'Какое ремесло было развито в Галичском крае?', options: ['Гончарное', 'Космическое', 'Морское', 'Цирковое'], correct: 0, note: 'Галичские гончары славились на всю губернию.' }
-    ]
-  }
-];
-
-// ===== СОСТОЯНИЕ =====
-let state = {
-  attempt: 1,
-  currentFront: null,
-  questionIndex: 0,
-  correctCount: 0,
-  errorCount: 0,
-  shuffledQuestions: [],
-  answered: false
-};
-
-// ===== DOM =====
-const $ = id => document.getElementById(id);
-const screens = document.querySelectorAll('.screen');
-
-function showScreen(id) {
-  screens.forEach(s => s.classList.remove('active'));
-  $(id).classList.add('active');
+:root {
+  --bg: #1a1512;
+  --panel: #2a221c;
+  --panel-border: #4a3b2e;
+  --text: #e8dcc8;
+  --accent: #a83232;
+  --accent-soft: #c9a227;
+  --green: #4a7c4a;
+  --red: #8b2e2e;
+  --font-main: Georgia, 'Times New Roman', serif;
+  --font-ui: system-ui, -apple-system, sans-serif;
 }
 
-// ===== ЗВУК (Web Audio) =====
-let audioCtx = null;
-function playSound(type) {
-  try {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    if (type === 'correct') {
-      osc.frequency.value = 660;
-      osc.type = 'sine';
-      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.4);
-    } else {
-      osc.frequency.value = 120;
-      osc.type = 'sawtooth';
-      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.5);
-    }
-  } catch(e) {}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ============================================================ */
+/* ФОНОВОЕ ИЗОБРАЖЕНИЕ: ЗАМЕНИ bg.jpg НА СВОЙ ФАЙЛ */
+/* Положи файл рядом с index.html. Если файла нет — останется тёмный фон. */
+/* ============================================================ */
+body {
+  background-color: var(--bg);
+  background-image: url('bg.jpg'); /* <-- ЗДЕСЬ СВОЁ ИЗОБРАЖЕНИЕ */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--font-ui);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 16px;
 }
 
-// ===== ПЕРЕМЕШИВАНИЕ =====
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
+/* Дым по низу экрана */
+#smoke-canvas {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 25vh;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
 }
 
-// ===== ЭКРАН ВЫБОРА =====
-function renderFronts() {
-  const container = $('fronts-container');
-  container.innerHTML = '';
-  fronts.forEach(f => {
-    const card = document.createElement('div');
-    card.className = 'front-card';
-    card.innerHTML = `
-      <span class="front-icon">${f.icon}</span>
-      <div class="front-title">${f.title}</div>
-      <div class="front-desc">${f.desc}</div>
-    `;
-    card.addEventListener('click', () => startFront(f));
-    container.appendChild(card);
-  });
+@media (max-width: 640px) {
+  #smoke-canvas { height: 20vh; }
 }
 
-function startFront(front) {
-  state.currentFront = front;
-  state.questionIndex = 0;
-  state.correctCount = 0;
-  state.errorCount = 0;
-  state.answered = false;
-  state.shuffledQuestions = shuffle(front.questions);
-  $('front-name').textContent = front.title;
-  renderBanner();
-  updateHud();
-  renderQuestion();
-  showScreen('screen-battle');
+#app {
+  width: 100%;
+  max-width: 900px;
+  background: rgba(42, 34, 28, 0.94);
+  border: 2px solid var(--panel-border);
+  border-radius: 4px;
+  padding: 28px;
+  position: relative;
+  z-index: 2;
+  box-shadow: 
+    0 0 0 1px #1a1512,
+    0 0 0 3px var(--panel-border),
+    0 0 0 5px #1a1512,
+    0 0 20px rgba(0,0,0,0.6);
 }
 
-// ===== ЗНАМЯ =====
-function renderBanner() {
-  const banner = $('banner');
-  banner.innerHTML = '';
-  for (let i = 0; i < 7; i++) {
-    const seg = document.createElement('div');
-    seg.className = 'banner-segment';
-    banner.appendChild(seg);
-  }
+/* Уголки-заклёпки панели */
+#app::before,
+#app::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--accent-soft);
+  border-radius: 2px;
+  opacity: 0.6;
+}
+#app::before { top: 6px; left: 6px; }
+#app::after { bottom: 6px; right: 6px; }
+
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ===== HUD ===== */
+.hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
+  position: relative;
 }
 
-function updateBanner() {
-  const segs = document.querySelectorAll('.banner-segment');
-  segs.forEach((seg, i) => {
-    seg.classList.remove('filled', 'cracked');
-    if (i < state.correctCount) seg.classList.add('filled');
-    else if (i >= 7 - state.errorCount) seg.classList.add('cracked');
-  });
+.hud::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent-soft) 20%, var(--accent-soft) 80%, transparent 100%);
+  opacity: 0.5;
+  border-radius: 2px;
 }
 
-function updateHud() {
-  $('shield-count').textContent = state.correctCount;
-  $('error-count').textContent = state.errorCount;
-  $('attempt-count').textContent = state.attempt;
+.hud-title { font-family: var(--font-main); font-weight: bold; color: var(--accent-soft); letter-spacing: 1px; text-transform: uppercase; font-size: 13px; }
+.hud-item b { color: var(--accent-soft); }
+
+/* ===== СТАРТОВЫЙ ЭКРАН ===== */
+.intro-title {
+  font-family: var(--font-main);
+  font-size: clamp(32px, 7vw, 56px);
+  text-align: center;
+  margin: 20px 0 6px;
+  color: var(--accent-soft);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  text-shadow: 0 3px 8px rgba(0,0,0,0.9), 0 0 20px rgba(201,162,39,0.2);
 }
 
-// ===== ВОПРОС =====
-function renderQuestion() {
-  if (state.questionIndex >= 7) {
-    // все вопросы пройдены
-    if (state.correctCount === 7) {
-      showVictory();
-    }
-    return;
-  }
-  const q = state.shuffledQuestions[state.questionIndex];
-  $('question-text').textContent = q.q;
-  const optsContainer = $('options-container');
-  optsContainer.innerHTML = '';
-  // перемешиваем варианты, запоминаем правильный текст
-  const correctText = q.options[q.correct];
-  const shuffledOpts = shuffle(q.options);
-  shuffledOpts.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    btn.textContent = opt;
-    btn.addEventListener('click', () => answer(btn, opt === correctText, q));
-    optsContainer.appendChild(btn);
-  });
-  $('note').hidden = true;
-  state.answered = false;
+.intro-subtitle {
+  text-align: center;
+  font-size: clamp(14px, 2.5vw, 18px);
+  font-style: italic;
+  opacity: 0.8;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
 }
 
-// ===== ОТВЕТ =====
-function answer(btn, isCorrect, q) {
-  if (state.answered) return;
-  state.answered = true;
-  const allBtns = document.querySelectorAll('.option-btn');
-  allBtns.forEach(b => b.disabled = true);
-
-  if (isCorrect) {
-    btn.classList.add('correct');
-    state.correctCount++;
-    playSound('correct');
-    updateBanner();
-    updateHud();
-    showNote(q.note);
-    setTimeout(() => {
-      state.questionIndex++;
-      renderQuestion();
-    }, 1200);
-  } else {
-    btn.classList.add('wrong');
-    state.errorCount++;
-    playSound('wrong');
-    updateBanner();
-    updateHud();
-    showNote(q.note);
-    setTimeout(() => {
-      if (state.errorCount === 1) {
-        showScreen('screen-breach');
-      } else {
-        showScreen('screen-retreat');
-      }
-    }, 1500);
-  }
+#intro-canvas {
+  display: block;
+  margin: 0 auto 24px;
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.7));
 }
 
-function showNote(text) {
-  $('note-text').textContent = text;
-  $('note').hidden = false;
+.intro-rules {
+  max-width: 620px;
+  margin: 0 auto 28px;
+  padding: 18px 22px;
+  background: rgba(26, 21, 18, 0.6);
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgba(201,162,39,0.1);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
-$('note-close').addEventListener('click', () => {
-  $('note').hidden = true;
-});
+.intro-rules p { margin-bottom: 10px; }
+.intro-rules p:last-child { margin-bottom: 0; }
+.intro-rules b { color: var(--accent-soft); }
 
-// ===== ПОБЕДА =====
-function showVictory() {
-  drawVictoryCanvas();
-  showScreen('screen-victory');
+.btn-big {
+  font-size: 18px;
+  padding: 16px 40px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  animation: btnGlow 2.5s ease-in-out infinite;
 }
 
-function drawVictoryCanvas() {
-  const canvas = $('victory-canvas');
-  const ctx = canvas.getContext('2d');
-  const w = canvas.width, h = canvas.height;
-  // фон — знамя
-  ctx.fillStyle = '#8b2e2e';
-  ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = '#c9a227';
-  ctx.fillRect(20, 20, w - 40, h - 40);
-  ctx.fillStyle = '#8b2e2e';
-  ctx.fillRect(30, 30, w - 60, h - 60);
-  // текст
-  ctx.fillStyle = '#e8dcc8';
-  ctx.font = 'bold 28px Georgia, serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('ФРОНТ УДЕРЖАН', w / 2, h / 2 - 20);
-  ctx.font = '18px Georgia, serif';
-  ctx.fillText(state.currentFront.title, w / 2, h / 2 + 20);
-  ctx.font = '14px Georgia, serif';
-  ctx.fillText('КПЦ им. Ефима Честнякова', w / 2, h - 50);
-  // обновляем og:image (для сниппета)
-  const dataUrl = canvas.toDataURL('image/png');
-  document.querySelector('meta[property="og:image"]').setAttribute('content', dataUrl);
-  document.querySelector('meta[property="vk:image"]').setAttribute('content', dataUrl);
+@keyframes btnGlow {
+  0%, 100% { box-shadow: 0 3px 0 #4a1515, 0 5px 10px rgba(0,0,0,0.4); }
+  50% { box-shadow: 0 3px 0 #4a1515, 0 5px 20px rgba(201,162,39,0.4); }
 }
 
-// ===== КНОПКИ =====
-$('btn-back-select').addEventListener('click', () => {
-  showScreen('screen-select');
-});
+/* ===== ЗАГОЛОВКИ ===== */
+.main-title {
+  font-family: var(--font-main);
+  font-size: clamp(24px, 5vw, 40px);
+  text-align: center;
+  margin: 20px 0 8px;
+  color: var(--accent-soft);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  letter-spacing: 2px;
+}
 
-$('btn-restart').addEventListener('click', () => {
-  state.attempt++;
-  updateHud();
-  showScreen('screen-select');
-});
+.subtitle {
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 28px;
+  opacity: 0.8;
+  font-style: italic;
+}
 
-$('btn-another').addEventListener('click', () => {
-  showScreen('screen-select');
-});
+/* ===== КАРТОЧКИ ФРОНТОВ ===== */
+.fronts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
 
-$('btn-share-vk').addEventListener('click', () => {
-  const url = encodeURIComponent(window.location.href);
-  const title = encodeURIComponent('Я удержал фронт! — КПЦ им. Ефима Честнякова');
-  window.open(`https://vk.com/share.php?url=${url}&title=${title}`, '_blank', 'width=600,height=400');
-});
+@media (max-width: 640px) {
+  .fronts { grid-template-columns: 1fr; }
+}
 
-$('btn-copy').addEventListener('click', () => {
-  navigator.clipboard.writeText(window.location.href).then(() => {
-    $('btn-copy').textContent = 'Скопировано!';
-    setTimeout(() => { $('btn-copy').textContent = 'Скопировать ссылку'; }, 2000);
-  });
-});
+.front-card {
+  background: linear-gradient(180deg, #2e241c 0%, #1f1913 100%);
+  border: 2px solid var(--panel-border);
+  border-radius: 4px;
+  padding: 22px 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(201,162,39,0.15);
+}
 
-// ===== СТАРТ =====
-renderFronts();
-updateHud();
+.front-card::before {
+  content: "";
+  position: absolute;
+  top: 4px; left: 4px; right: 4px; bottom: 4px;
+  border: 1px solid rgba(201,162,39,0.25);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.front-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-soft);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 15px rgba(201,162,39,0.2);
+}
+
+.front-card:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.front-icon { font-size: 40px; display: block; margin-bottom: 10px; }
+.front-title { font-family: var(--font-main); font-size: 18px; margin-bottom: 6px; color: var(--accent-soft); letter-spacing: 1px; }
+.front-desc { font-size: 12px; opacity: 0.7; margin-bottom: 8px; }
+.front-progress { 
+  font-size: 12px; 
+  color: var(--accent-soft); 
+  border-top: 1px solid rgba(201,162,39,0.2); 
+  padding-top: 8px; 
+  margin-top: 4px; 
+}
+
+/* ===== ЗНАМЯ ===== */
+.banner {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  height: 32px;
+  padding: 3px;
+  background: #1a1512;
+  border: 1px solid var(--panel-border);
+  border-radius: 3px;
+}
+
+.banner-segment {
+  flex: 1;
+  background: #2a221c;
+  border: 1px solid #3a2f24;
+  border-radius: 2px;
+  transition: background 0.4s, box-shadow 0.4s;
+}
+
+.banner-segment.filled { 
+  background: linear-gradient(180deg, #5a8c5a 0%, #3a5c3a 100%);
+  box-shadow: 0 0 8px rgba(74,124,74,0.5);
+  animation: pulse 0.6s ease;
+}
+
+.banner-segment.cracked { 
+  background: linear-gradient(180deg, #a83232 0%, #6b1f1f 100%);
+  box-shadow: 0 0 8px rgba(139,46,46,0.5);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* ===== ВОПРОС ===== */
+.question-text {
+  font-family: var(--font-main);
+  font-size: clamp(18px, 3.5vw, 24px);
+  margin-bottom: 22px;
+  line-height: 1.4;
+  padding: 12px 0;
+  border-top: 1px solid rgba(201,162,39,0.15);
+  border-bottom: 1px solid rgba(201,162,39,0.15);
+}
+
+/* ===== ВАРИАНТЫ ОТВЕТОВ ===== */
+.options { display: flex; flex-direction: column; gap: 10px; }
+
+.option-btn {
+  background: linear-gradient(180deg, #2e241c 0%, #1f1913 100%);
+  border: 2px solid var(--panel-border);
+  color: var(--text);
+  padding: 14px 18px;
+  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  transition: border-color 0.2s, background 0.2s, transform 0.1s;
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(201,162,39,0.1);
+}
+
+.option-btn::before {
+  content: "▸";
+  color: var(--accent-soft);
+  margin-right: 10px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.option-btn:hover:not(:disabled) { 
+  border-color: var(--accent-soft);
+  background: linear-gradient(180deg, #3a2e22 0%, #2a2018 100%);
+}
+
+.option-btn:hover:not(:disabled)::before { opacity: 1; }
+
+.option-btn:active:not(:disabled) { transform: scale(0.99); }
+
+.option-btn.correct { 
+  border-color: var(--green); 
+  background: linear-gradient(180deg, #2a3a2a 0%, #1f2a1f 100%);
+  box-shadow: 0 0 12px rgba(74,124,74,0.3);
+}
+.option-btn.wrong { 
+  border-color: var(--red); 
+  background: linear-gradient(180deg, #3a2222 0%, #2a1818 100%);
+  box-shadow: 0 0 12px rgba(139,46,46,0.3);
+}
+.option-btn:disabled { cursor: default; }
+
+/* ===== ЗАМЕТКА ===== */
+.note {
+  margin-top: 18px;
+  padding: 14px 18px;
+  background: linear-gradient(180deg, #332a22 0%, #241d16 100%);
+  border-left: 4px solid var(--accent-soft);
+  border-radius: 2px;
+  position: relative;
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.note-close {
+  position: absolute;
+  top: 4px; right: 8px;
+  background: none; border: none;
+  color: var(--text); font-size: 20px;
+  cursor: pointer; opacity: 0.6;
+}
+
+.note-close:hover { opacity: 1; }
+
+/* ===== РЕЗУЛЬТАТЫ ===== */
+.result-title {
+  font-family: var(--font-main);
+  font-size: clamp(22px, 4vw, 32px);
+  text-align: center;
+  margin: 28px 0 14px;
+  color: var(--accent-soft);
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+}
+
+.result-text { text-align: center; font-size: 16px; margin-bottom: 26px; line-height: 1.5; }
+
+/* ===== КНОПКИ ===== */
+.btn {
+  display: block;
+  margin: 0 auto 12px;
+  background: linear-gradient(180deg, #a83232 0%, #6b1f1f 100%);
+  border: 2px solid var(--accent-soft);
+  color: var(--text);
+  padding: 12px 32px;
+  font-size: 16px;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  position: relative;
+  box-shadow: 0 3px 0 #4a1515, 0 5px 10px rgba(0,0,0,0.4);
+  letter-spacing: 0.5px;
+}
+
+.btn:hover { 
+  background: linear-gradient(180deg, #c03a3a 0%, #8b2e2e 100%);
+  box-shadow: 0 3px 0 #4a1515, 0 5px 15px rgba(168,50,50,0.4);
+}
+
+.btn:active { 
+  transform: translateY(2px); 
+  box-shadow: 0 1px 0 #4a1515, 0 2px 5px rgba(0,0,0,0.4);
+}
+
+.btn-secondary { 
+  background: linear-gradient(180deg, #3a2e22 0%, #241d16 100%);
+  box-shadow: 0 3px 0 #1a1512, 0 5px 10px rgba(0,0,0,0.4);
+}
+
+.btn-secondary:hover { 
+  background: linear-gradient(180deg, #4a3a2a 0%, #2e241c 100%);
+  box-shadow: 0 3px 0 #1a1512, 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.share-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+
+/* ===== CANVAS-ЩИТ ===== */
+#victory-canvas {
+  display: block;
+  margin: 0 auto 18px;
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 6px 15px rgba(0,0,0,0.6));
+}
+
+/* ===== ЛЕНТА ВРЕМЕНИ ===== */
+.timeline {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  font-family: var(--font-main);
+  font-size: 14px;
+  color: var(--accent-soft);
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  letter-spacing: 1px;
+}
+
+.timeline span { position: relative; }
+.timeline span:not(:last-child)::after {
+  content: "→";
+  margin-left: 16px;
+  opacity: 0.5;
+}

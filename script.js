@@ -407,9 +407,6 @@ function drawVictoryCanvas() {
   ctx.fillStyle = '#e8dcc8';
   ctx.fillText(state.currentFront.title, cx, top + 110);
 
-  ctx.font = '13px Georgia, serif';
-  ctx.fillStyle = 'rgba(232,220,200,0.8)';
-  ctx.fillText('КПЦ им. Ефима Честнякова', cx, bottom - 45);
 
   ctx.shadowBlur = 0;
   ctx.shadowOffsetY = 0;
@@ -715,7 +712,7 @@ function init() {
     const title = encodeURIComponent('Я удержал фронт! — КПЦ им. Ефима Честнякова');
     const comment = encodeURIComponent(
       `Я прошёл фронт «${state.currentFront.title}» в игре ко Дню народного единства! ` +
-      `7 из 7 без ошибок. А ты сможешь? 🛡️`
+      `7 из 7. А ты сможешь? 🛡️`
     );
     window.open(
       `https://vk.com/share.php?url=${url}&title=${title}&comment=${comment}`,

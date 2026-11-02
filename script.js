@@ -273,8 +273,13 @@ function answer(btn, isCorrect, q, questionIdx) {
     updateHud();
     showNote(q.note);
     setTimeout(() => {
-      renderFronts();
-      showScreen('screen-select');
+      // Если это был 7-й правильный ответ — сразу показываем победу
+      if (prog.correctCount === 7) {
+        showVictory();
+      } else {
+        renderFronts();
+        showScreen('screen-select');
+      }
     }, 1200);
   } else {
     btn.classList.add('wrong');

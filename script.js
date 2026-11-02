@@ -69,7 +69,8 @@ let musicStarted = false;
 
 function showScreen(id) {
   screens.forEach(s => s.classList.remove('active'));
-  $(id).classList.add('active');
+  const el = $(id);
+  if (el) el.classList.add('active');
 }
 
 // ===== МУЗЫКА =====
@@ -82,7 +83,7 @@ function tryStartMusic() {
   }
 }
 
-// ===== ЗВУК (Web Audio) =====
+// ===== ЗВУК =====
 function playSound(type) {
   try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -121,6 +122,7 @@ function shuffle(arr) {
 // ===== ЭКРАН ВЫБОРА =====
 function renderFronts() {
   const container = $('fronts-container');
+  if (!container) return;
   container.innerHTML = '';
   fronts.forEach(f => {
     const prog = state.progress[f.id];
@@ -167,6 +169,7 @@ function resumeFront(front) {
 // ===== ЗНАМЯ =====
 function renderBanner() {
   const banner = $('banner');
+  if (!banner) return;
   banner.innerHTML = '';
   for (let i = 0; i < 7; i++) {
     const seg = document.createElement('div');
@@ -177,6 +180,7 @@ function renderBanner() {
 
 function updateBanner() {
   const segs = document.querySelectorAll('.banner-segment');
+  if (!state.currentFront) return;
   const prog = state.progress[state.currentFront.id];
   segs.forEach((seg, i) => {
     seg.classList.remove('filled', 'cracked');
@@ -294,12 +298,13 @@ function resetFrontProgress(frontId) {
 
 // ===== ПОБЕДА =====
 function showVictory() {
-  drawVictoryCanvas();
+  try { drawVictoryCanvas(); } catch(e) {}
   showScreen('screen-victory');
 }
 
 function drawVictoryCanvas() {
   const canvas = $('victory-canvas');
+  if (!canvas) return;
   const ctx = canvas.getContext('2d');
   const w = canvas.width, h = canvas.height;
   ctx.clearRect(0, 0, w, h);
@@ -389,11 +394,13 @@ function drawVictoryCanvas() {
   ctx.shadowOffsetY = 0;
 
   const dataUrl = canvas.toDataURL('image/png');
-  document.querySelector('meta[property="og:image"]').setAttribute('content', dataUrl);
-  document.querySelector('meta[property="vk:image"]').setAttribute('content', dataUrl);
+  const ogImg = document.querySelector('meta[property="og:image"]');
+  const vkImg = document.querySelector('meta[property="vk:image"]');
+  if (ogImg) ogImg.setAttribute('content', dataUrl);
+  if (vkImg) vkImg.setAttribute('content', dataUrl);
 }
 
-// ===== ЩИТ С ДВУМЯ МЕЧАМИ (стартовый экран) =====
+// ===== ЩИТ С МЕЧАМИ =====
 function drawIntroShield() {
   const canvas = document.getElementById('intro-canvas');
   if (!canvas) return;
@@ -519,8 +526,8 @@ function drawIntroShield() {
   });
 }
 
-// ===== ДЫМ И УГЛИ =====
-(function initSmoke() {
+// ===== ДЫМ =====
+function initSmoke() {
   const canvas = document.getElementById('smoke-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -638,49 +645,71 @@ function drawIntroShield() {
   }
 
   draw();
-})();
+}
 
-// ===== КНОПКИ =====
-$('btn-back-select').addEventListener('click', () => {
-  showScreen('screen-select');
-});
-
-$('btn-restart').addEventListener('click', () => {
-  state.attempt++;
-  if (state.currentFront) {
-    resetFrontProgress(state.currentFront.id);
-  }
-  updateHud();
+// ===== ИНИЦИАЛИЗАЦИЯ =====
+function init() {
   renderFronts();
-  showScreen('screen-select');
-});
+  updateHud();
 
-$('btn-another').addEventListener('click', () => {
-  showScreen('screen-select');
-});
+  // Сначала показываем стартовый экран
+  showScreen('screen-intro');
 
-$('btn-share-vk').addEventListener('click', () => {
-  const url = encodeURIComponent(window.location.href);
-  const title = encodeURIComponent('Я удержал фронт! — КПЦ им. Ефима Честнякова');
-  const comment = encodeURIComponent(
-    `Я прошёл фронт «${state.currentFront.title}» в игре ко Дню народного единства! ` +
-    `7 из 7 без ошибок. А ты сможешь? 🛡️`
-  );
-  window.open(
-    `https://vk.com/share.php?url=${url}&title=${title}&comment=${comment}`,
-    '_blank',
-    'width=600,height=500'
-  );
-});
+  // Кнопка «Приступить» — вешаем обработчик с проверкой
+  const btnStart = document.getElementById('btn-start');
+  if (btnStart) {
+    btnStart.addEventListener('click', () => {
+      tryStartMusic();
+      showScreen('screen-select');
+    });
+  }
 
-// ===== СТАРТ =====
-renderFronts();
-updateHud();
-showScreen('screen-intro');
+  // Рисуем щит с мечами (в try/catch, чтобы ошибка canvas не ломала кнопку)
+  try { drawIntroShield(); } catch(e) { console.warn('Intro shield error:', e); }
 
-document.getElementById('btn-start').addEventListener('click', () => {
-  tryStartMusic();
-  showScreen('screen-select');
-});
+  // Дым
+  try { initSmoke(); } catch(e) { console.warn('Smoke error:', e); }
 
-drawIntroShield();
+  // Остальные кнопки
+  const btnBackSelect = document.getElementById('btn-back-select');
+  if (btnBackSelect) btnBackSelect.addEventListener('click', () => showScreen('screen-select'));
+
+  const btnRestart = document.getElementById('btn-restart');
+  if (btnRestart) btnRestart.addEventListener('click', () => {
+    state.attempt++;
+    if (state.currentFront) resetFrontProgress(state.currentFront.id);
+    updateHud();
+    renderFronts();
+    showScreen('screen-select');
+  });
+
+  const btnAnother = document.getElementById('btn-another');
+  if (btnAnother) btnAnother.addEventListener('click', () => showScreen('screen-select'));
+
+  const btnShareVk = document.getElementById('btn-share-vk');
+  if (btnShareVk) btnShareVk.addEventListener('click', () => {
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent('Я удержал фронт! — КПЦ им. Ефима Честнякова');
+    const comment = encodeURIComponent(
+      `Я прошёл фронт «${state.currentFront.title}» в игре ко Дню народного единства! ` +
+      `7 из 7 без ошибок. А ты сможешь? 🛡️`
+    );
+    window.open(
+      `https://vk.com/share.php?url=${url}&title=${title}&comment=${comment}`,
+      '_blank',
+      'width=600,height=500'
+    );
+  });
+
+  const noteClose = document.getElementById('note-close');
+  if (noteClose) noteClose.addEventListener('click', () => {
+    document.getElementById('note').hidden = true;
+  });
+}
+
+// Запуск после загрузки DOM
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}

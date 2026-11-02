@@ -651,11 +651,8 @@ function initSmoke() {
 function init() {
   renderFronts();
   updateHud();
-
-  // Сначала показываем стартовый экран
   showScreen('screen-intro');
 
-  // Кнопка «Приступить» — вешаем обработчик с проверкой
   const btnStart = document.getElementById('btn-start');
   if (btnStart) {
     btnStart.addEventListener('click', () => {
@@ -664,13 +661,9 @@ function init() {
     });
   }
 
-  // Рисуем щит с мечами (в try/catch, чтобы ошибка canvas не ломала кнопку)
   try { drawIntroShield(); } catch(e) { console.warn('Intro shield error:', e); }
-
-  // Дым
   try { initSmoke(); } catch(e) { console.warn('Smoke error:', e); }
 
-  // Остальные кнопки
   const btnBackSelect = document.getElementById('btn-back-select');
   if (btnBackSelect) btnBackSelect.addEventListener('click', () => showScreen('screen-select'));
 
@@ -707,7 +700,6 @@ function init() {
   });
 }
 
-// Запуск после загрузки DOM
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {

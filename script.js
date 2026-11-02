@@ -304,7 +304,7 @@ function answer(btn, isCorrect, q, questionIdx) {
 
     setTimeout(() => {
       if (state.totalErrors === 1) {
-        $('breach-text').textContent = `Фронт «${front.title}» прорван. Прогресс сохранён — вернись и продолжи с того же места.`;
+        $('breach-text').textContent = `Фронт «${front.title}» прорван. Прогресс сохранён и мы отбились, но этого мало — вернись и продолжи на другом фронте.`;
         showScreen('screen-breach');
       } else {
         // ВТОРАЯ ОШИБКА — ПОЛНЫЙ СБРОС ВСЕХ ФРОНТОВ

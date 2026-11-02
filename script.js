@@ -1,8 +1,12 @@
-// ===== ДАННЫЕ ФРОНТОВ =====
+// ============================================================ -->
+// ВНИМАНИЕ: ЧТОБЫ ДОБАВИТЬ КАРТИНКУ ФРОНТУ, ВСТАВЬ ССЫЛКУ В ПОЛЕ image -->
+// Например: image: 'https://example.com/smuta.jpg' -->
+// Если ссылки нет — оставь пустые кавычки: image: '' -->
+// ============================================================ -->
 const fronts = [
   {
     id: 'smuta',
-    icon: '⚔️',
+    image: '', // <-- ССЫЛКА НА КАРТИНКУ ФРОНТА «СМУТНОЕ ВРЕМЯ»
     title: 'Смутное время',
     desc: 'История ополчения Минина и Пожарского',
     questions: [
@@ -17,7 +21,7 @@ const fronts = [
   },
   {
     id: 'russia',
-    icon: '🐻',
+    image: '', // <-- ССЫЛКА НА КАРТИНКУ ФРОНТА «РОССИЯ СЕГОДНЯ»
     title: 'Россия сегодня',
     desc: 'Символы и праздники страны',
     questions: [
@@ -32,7 +36,7 @@ const fronts = [
   },
   {
     id: 'kostroma',
-    icon: '🌲',
+    image: '', // <-- ССЫЛКА НА КАРТИНКУ ФРОНТА «КОСТРОМСКОЙ КРАЙ»
     title: 'Костромской край',
     desc: 'Честняков и народные промыслы',
     questions: [
@@ -47,7 +51,6 @@ const fronts = [
   }
 ];
 
-// ===== СОСТОЯНИЕ =====
 let state = {
   attempt: 1,
   currentFront: null,
@@ -59,7 +62,8 @@ let state = {
 
 fronts.forEach(f => {
   state.progress[f.id] = { correctCount: 0, errorCount: 0, answeredIndices: [] };
-});// ===== DOM =====
+});
+
 const $ = id => document.getElementById(id);
 const screens = document.querySelectorAll('.screen');
 let audioCtx = null;
@@ -71,7 +75,6 @@ function showScreen(id) {
   if (el) el.classList.add('active');
 }
 
-// ===== МУЗЫКА =====
 function tryStartMusic() {
   if (musicStarted) return;
   const music = $('bg-music');
@@ -81,7 +84,6 @@ function tryStartMusic() {
   }
 }
 
-// ===== ЗВУК =====
 function playSound(type) {
   try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -107,7 +109,6 @@ function playSound(type) {
   } catch(e) {}
 }
 
-// ===== ПЕРЕМЕШИВАНИЕ =====
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -126,11 +127,16 @@ function renderFronts() {
     const prog = state.progress[f.id];
     const card = document.createElement('div');
     card.className = 'front-card';
+    const imgHtml = f.image
+      ? `<img class="front-card-image" src="${f.image}" alt="${f.title}" onerror="this.style.display='none'">`
+      : '';
     card.innerHTML = `
-      <span class="front-icon">${f.icon}</span>
-      <div class="front-title">${f.title}</div>
-      <div class="front-desc">${f.desc}</div>
-      <div class="front-progress">Щит: ${prog.correctCount}/7 · Ошибок: ${prog.errorCount}</div>
+      ${imgHtml}
+      <div class="front-card-body">
+        <div class="front-title">${f.title}</div>
+        <div class="front-desc">${f.desc}</div>
+        <div class="front-progress">Щит: ${prog.correctCount}/7 · Ошибок: ${prog.errorCount}</div>
+      </div>
     `;
     card.addEventListener('click', () => {
       tryStartMusic();
@@ -158,13 +164,25 @@ function resumeFront(front) {
   }
 
   $('front-name').textContent = front.title;
+
+  // Картинка фронта в бою
+  const imgWrap = $('front-image-wrap');
+  const img = $('front-image');
+  if (front.image && imgWrap && img) {
+    img.src = front.image;
+    img.alt = front.title;
+    imgWrap.hidden = false;
+  } else if (imgWrap) {
+    imgWrap.hidden = true;
+  }
+
   renderBanner();
   updateHud();
+  updateBanner(); // <-- ВАЖНО: заполняем знамя сразу при входе
   renderNextQuestion();
   showScreen('screen-battle');
 }
 
-// ===== ЗНАМЯ =====
 function renderBanner() {
   const banner = $('banner');
   if (!banner) return;
@@ -196,7 +214,6 @@ function updateHud() {
   $('attempt-count').textContent = state.attempt;
 }
 
-// ===== ВОПРОС =====
 function renderNextQuestion() {
   const front = state.currentFront;
   const prog = state.progress[front.id];
@@ -238,7 +255,6 @@ function renderNextQuestion() {
   state.answered = false;
 }
 
-// ===== ОТВЕТ =====
 function answer(btn, isCorrect, q, questionIdx) {
   if (state.answered) return;
   state.answered = true;
@@ -285,21 +301,16 @@ function showNote(text) {
   $('note').hidden = false;
 }
 
-$('note-close').addEventListener('click', () => {
-  $('note').hidden = true;
-});
-
-// ===== СБРОС =====
 function resetFrontProgress(frontId) {
   state.progress[frontId] = { correctCount: 0, errorCount: 0, answeredIndices: [] };
 }
 
-// ===== ПОБЕДА =====
 function showVictory() {
   try { drawVictoryCanvas(); } catch(e) {}
   showScreen('screen-victory');
 }
 
+// ===== ЩИТ НА ПОБЕДУ =====
 function drawVictoryCanvas() {
   const canvas = $('victory-canvas');
   if (!canvas) return;

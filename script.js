@@ -51,17 +51,19 @@ const fronts = [
   }
 ];
 
+// ===== СОСТОЯНИЕ =====
 let state = {
   attempt: 1,
   currentFront: null,
   correctCount: 0,
-  errorCount: 0,
+  totalErrors: 0,   // <-- ОБЩИЙ БАНК ОШИБОК НА ВСЮ ИГРУ
   answered: false,
   progress: {}
 };
 
 fronts.forEach(f => {
-  state.progress[f.id] = { correctCount: 0, errorCount: 0, answeredIndices: [] };
+  // errorCount внутри фронта больше не храним — ошибки общие
+  state.progress[f.id] = { correctCount: 0, answeredIndices: [] };
 });
 
 const $ = id => document.getElementById(id);
@@ -80,7 +82,7 @@ function tryStartMusic() {
   if (musicStarted) return;
   const music = $('bg-music');
   if (music && music.querySelector('source') && music.querySelector('source').src) {
-    music.volume = 0.2; // <-- ГРОМКОСТЬ 20%
+    music.volume = 0.2;
     music.play().then(() => { musicStarted = true; }).catch(() => {});
   }
 }
@@ -136,7 +138,7 @@ function renderFronts() {
       <div class="front-card-body">
         <div class="front-title">${f.title}</div>
         <div class="front-desc">${f.desc}</div>
-        <div class="front-progress">Щит: ${prog.correctCount}/7 · Ошибок: ${prog.errorCount}</div>
+        <div class="front-progress">Щит: ${prog.correctCount}/7</div>
       </div>
     `;
     card.addEventListener('click', () => {
@@ -151,7 +153,6 @@ function resumeFront(front) {
   state.currentFront = front;
   const prog = state.progress[front.id];
   state.correctCount = prog.correctCount;
-  state.errorCount = prog.errorCount;
   state.answered = false;
 
   if (prog.answeredIndices.length >= 7) {
@@ -201,7 +202,6 @@ function updateBanner() {
   segs.forEach((seg, i) => {
     seg.classList.remove('filled', 'cracked');
     if (i < prog.correctCount) seg.classList.add('filled');
-    else if (i >= 7 - prog.errorCount) seg.classList.add('cracked');
   });
 }
 
@@ -209,8 +209,8 @@ function updateHud() {
   const prog = state.progress[state.currentFront?.id];
   if (prog) {
     $('shield-count').textContent = prog.correctCount;
-    $('error-count').textContent = prog.errorCount;
   }
+  $('error-count').textContent = state.totalErrors;  // <-- ОБЩИЙ СЧЁТЧИК
   $('attempt-count').textContent = state.attempt;
 }
 
@@ -278,17 +278,19 @@ function answer(btn, isCorrect, q, questionIdx) {
     }, 1200);
   } else {
     btn.classList.add('wrong');
-    prog.errorCount++;
+    state.totalErrors++;   // <-- ОБЩИЙ БАНК
     playSound('wrong');
     updateBanner();
     updateHud();
     showNote(q.note);
 
     setTimeout(() => {
-      if (prog.errorCount === 1) {
+      if (state.totalErrors === 1) {
         $('breach-text').textContent = `Фронт «${front.title}» прорван. Прогресс сохранён — вернись и продолжи с того же места.`;
         showScreen('screen-breach');
       } else {
+        // ВТОРАЯ ОШИБКА — ПОЛНЫЙ СБРОС ВСЕХ ФРОНТОВ
+        resetAllProgress();
         showScreen('screen-retreat');
       }
       renderFronts();
@@ -301,8 +303,18 @@ function showNote(text) {
   $('note').hidden = false;
 }
 
+// СБРОС ВСЕХ ФРОНТОВ И ОБЩЕГО БАНКА ОШИБОК
+function resetAllProgress() {
+  fronts.forEach(f => {
+    state.progress[f.id] = { correctCount: 0, answeredIndices: [] };
+  });
+  state.totalErrors = 0;
+  state.currentFront = null;
+  state.correctCount = 0;
+}
+
 function resetFrontProgress(frontId) {
-  state.progress[frontId] = { correctCount: 0, errorCount: 0, answeredIndices: [] };
+  state.progress[frontId] = { correctCount: 0, answeredIndices: [] };
 }
 
 function showVictory() {
@@ -409,7 +421,7 @@ function drawVictoryCanvas() {
   if (vkImg) vkImg.setAttribute('content', dataUrl);
 }
 
-// ===== ЩИТ С МЕЧАМИ =====
+// ===== ЩИТ С МЕЧАМИ (МЕДВЕДЬ) =====
 function drawIntroShield() {
   const canvas = document.getElementById('intro-canvas');
   if (!canvas) return;
@@ -511,11 +523,12 @@ function drawIntroShield() {
   shieldPath(18);
   ctx.stroke();
 
+  // МЕДВЕДЬ
   ctx.fillStyle = 'rgba(232,209,138,0.85)';
   ctx.font = 'bold 38px Georgia, serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('🦅', cx, h / 2 + 5);
+  ctx.fillText('🐻', cx, h / 2 + 5);
 
   const rivets = [
     [left + 18, top + 18],
@@ -544,14 +557,18 @@ function initSmoke() {
 
   function resize() {
     const dpr = window.devicePixelRatio || 1;
-    w = canvas.clientWidth;
-    h = canvas.clientHeight;
+    w = window.innerWidth;
+    h = window.innerHeight;
     canvas.width = w * dpr;
     canvas.height = h * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   resize();
   window.addEventListener('resize', resize);
+  requestAnimationFrame(resize);
+  setTimeout(resize, 100);
 
   const smokeParticles = [];
   const SMOKE_COUNT = 60;
@@ -680,18 +697,15 @@ function init() {
   const btnBackSelect = document.getElementById('btn-back-select');
   if (btnBackSelect) btnBackSelect.addEventListener('click', () => showScreen('screen-select'));
 
- const btnRestart = document.getElementById('btn-restart');
-if (btnRestart) btnRestart.addEventListener('click', () => {
-  state.attempt++;
-  // СБРОС ВСЕХ ФРОНТОВ
-  fronts.forEach(f => {
-    state.progress[f.id] = { correctCount: 0, errorCount: 0, answeredIndices: [] };
+  const btnRestart = document.getElementById('btn-restart');
+  if (btnRestart) btnRestart.addEventListener('click', () => {
+    state.attempt++;
+    resetAllProgress();  // <-- СБРОС ВСЕХ ФРОНТОВ И ОБЩЕГО БАНКА
+    updateHud();
+    renderFronts();
+    showScreen('screen-select');
   });
-  state.currentFront = null;
-  updateHud();
-  renderFronts();
-  showScreen('screen-select');
-});
+
   const btnAnother = document.getElementById('btn-another');
   if (btnAnother) btnAnother.addEventListener('click', () => showScreen('screen-select'));
 

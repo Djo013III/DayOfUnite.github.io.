@@ -1,115 +1,509 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Держим фронт — КПЦ им. Ефима Честнякова</title>
-<meta property="og:title" content="Держим фронт — игра ко Дню народного единства">
-<meta property="og:description" content="Выбери фронт и удержи его. 7 вопросов, одна ошибка — и фронт прорван.">
-<meta property="og:type" content="website">
-<meta property="og:image" content="">
-<meta property="vk:image" content="">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+:root {
+  --bg: #1a1512;
+  --panel: #2a221c;
+  --panel-border: #4a3b2e;
+  --text: #e8dcc8;
+  --accent: #a83232;
+  --accent-soft: #c9a227;
+  --green: #4a7c4a;
+  --red: #8b2e2e;
+  --font-main: Georgia, 'Times New Roman', serif;
+  --font-ui: system-ui, -apple-system, sans-serif;
+}
 
-<!-- ============================================================ -->
-<!-- ФОНОВАЯ МУЗЫКА: ЗАМЕНИ music.mp3 НА СВОЙ ФАЙЛ -->
-<!-- Положи файл рядом с index.html. Если файла нет — музыки не будет, ошибки не будет. -->
-<!-- ============================================================ -->
-<audio id="bg-music" loop>
-  <source src="music.mp3" type="audio/mpeg">
-</audio>
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-<canvas id="smoke-canvas"></canvas>
+html, body { overflow-x: hidden; }
 
-<div id="app">
-  <span class="corner-tl"></span>
-<span class="corner-tr"></span>
+/* ФОНОВОЕ ИЗОБРАЖЕНИЕ */
+body {
+  background-color: var(--bg);
+  background-image: url('bg.jpg'); /* <-- СЮДА СВОЮ КАРТИНКУ */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--font-ui);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 8px;
+}
 
-  <!-- ЭКРАН ПРИВЕТСТВИЯ -->
-  <section id="screen-intro" class="screen active">
-    <h1 class="intro-title">Держим фронт</h1>
-    <p class="intro-subtitle">Игра ко Дню народного единства</p>
+@media (min-width: 641px) { body { padding: 16px; } }
 
-    <canvas id="intro-canvas" width="400" height="260"></canvas>
+/* ТУМАН: СДЕЛАЛ ЕГО ЗАМЕТНЕЕ */
+#smoke-canvas {
+  position: fixed;
+  bottom: 0; left: 0;
+  width: 100%;
+  height: 30vh; /* Чуть выше, чтобы дымка читалась */
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.9;
+  background: linear-gradient(to top, rgba(120, 100, 85, 0.1) 0%, transparent 100%);
+}
 
-    <div class="intro-rules">
-      <p><b>Что это?</b> Три фронта, три темы: история ополчения, символы России и Костромской край. Твоя задача — удержать хотя бы один.</p>
-      <p><b>Как играть?</b> Выбираешь фронт, отвечаешь на 7 вопросов. Одна ошибка — фронт прорван, но прогресс сохранится. Вторая ошибка — отступление и начало заново.</p>
-      <p><b>Как победить?</b> Ответить на все 7 вопросов без единой ошибки. Тогда фронт удержан.</p>
-    </div>
+@media (max-width: 640px) { #smoke-canvas { height: 22vh; } }
 
-    <button class="btn btn-big" id="btn-start">Приступить к защите фронта</button>
-  </section>
+/* ПАНЕЛЬ (БЕЗ КРИВЫХ КВАДРАТОВ, ТОЛЬКО ЧЕТКАЯ РАМКА) */
+#app {
+  width: 100%;
+  max-width: 900px;
+  background: rgba(42, 34, 28, 0.94);
+  border: 2px solid var(--panel-border);
+  border-radius: 4px;
+  padding: 16px;
+  position: relative;
+  z-index: 2;
+  /* Двойная обводка через box-shadow, она ровная по всем углам */
+  box-shadow: 
+    0 0 0 1px #1a1512,
+    0 0 0 3px var(--panel-border),
+    0 0 20px rgba(0,0,0,0.6);
+}
 
-  <!-- ЭКРАН ВЫБОРА ФРОНТА -->
-  <section id="screen-select" class="screen">
-    <header class="hud">
-      <span class="hud-title">Летопись</span>
-      <span class="hud-item">Попыток: <b id="attempt-count">1</b></span>
-    </header>
-    <h1 class="main-title">Держи оборону</h1>
-    <p class="subtitle">Выбери фронт. Семь вопросов. Ошибка — и фронт прорван, но прогресс сохранится.</p>
-    <div class="fronts" id="fronts-container"></div>
-  </section>
+@media (min-width: 641px) { #app { padding: 28px; } }
 
-  <!-- ЭКРАН БОЯ -->
-  <section id="screen-battle" class="screen">
-    <header class="hud">
-      <span class="hud-title" id="front-name">Фронт</span>
-      <span class="hud-item">Щит: <b id="shield-count">0</b>/7</span>
-      <span class="hud-item">Ошибок: <b id="error-count">0</b></span>
-    </header>
+.screen { display: none; }
+.screen.active { display: block; }
 
-    <!-- КАРТИНКА ФРОНТА (из внешней ссылки) -->
-    <div class="front-image-wrap" id="front-image-wrap" hidden>
-      <img id="front-image" alt="">
-    </div>
+/* ===== HUD ===== */
+.hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  flex-wrap: wrap;
+  gap: 6px;
+  position: relative;
+}
 
-    <div class="banner" id="banner"></div>
+.hud::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent-soft) 20%, var(--accent-soft) 80%, transparent 100%);
+  opacity: 0.5;
+  border-radius: 2px;
+}
 
-    <div class="question-box">
-      <p class="question-text" id="question-text"></p>
-      <div class="options" id="options-container"></div>
-    </div>
+.hud-title { font-family: var(--font-main); font-weight: bold; color: var(--accent-soft); letter-spacing: 1px; text-transform: uppercase; font-size: 12px; }
+.hud-item b { color: var(--accent-soft); }
 
-    <div class="note" id="note" hidden>
-      <button class="note-close" id="note-close">×</button>
-      <p id="note-text"></p>
-    </div>
-  </section>
+/* ===== СТАРТОВЫЙ ЭКРАН ===== */
+#screen-intro { text-align: center; }
 
-  <!-- ЭКРАН ПОРАЖЕНИЯ -->
-  <section id="screen-breach" class="screen">
-    <h2 class="result-title">Фронт прорван</h2>
-    <p class="result-text" id="breach-text">Враг потеснил ополчение. Прогресс сохранён — вернись и продолжи с того же места.</p>
-    <button class="btn" id="btn-back-select">К выбору фронта</button>
-  </section>
+.intro-title {
+  font-family: var(--font-main);
+  font-size: clamp(28px, 8vw, 56px);
+  text-align: center;
+  margin: 12px 0 4px;
+  color: var(--accent-soft);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-shadow: 0 3px 8px rgba(0,0,0,0.9), 0 0 20px rgba(201,162,39,0.2);
+  line-height: 1.1;
+}
 
-  <!-- ЭКРАН ОТСТУПЛЕНИЯ -->
-  <section id="screen-retreat" class="screen">
-    <h2 class="result-title">Срочно отступить и перегруппироваться</h2>
-    <p class="result-text">Ополчение отходит. Соберись с силами и начни заново.</p>
-    <button class="btn" id="btn-restart">Начать заново</button>
-  </section>
+@media (min-width: 641px) { .intro-title { letter-spacing: 4px; margin: 20px 0 6px; } }
 
-  <!-- ЭКРАН ПОБЕДЫ -->
-  <section id="screen-victory" class="screen">
-    <h2 class="result-title">Фронт удержан!</h2>
-    <canvas id="victory-canvas" width="600" height="300"></canvas>
-    <div class="timeline">
-      <span>1612</span><span>1812</span><span>1945</span><span>2026</span>
-    </div>
-    <p class="result-text">Ты сохранил память. Единство — это то, что мы несём вместе.</p>
-    <div class="share-row">
-      <button class="btn" id="btn-share-vk">Поделиться ВК</button>
-      <button class="btn btn-secondary" id="btn-another">Другой фронт</button>
-    </div>
-  </section>
+.intro-subtitle {
+  text-align: center;
+  font-size: clamp(12px, 3vw, 18px);
+  font-style: italic;
+  opacity: 0.8;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
 
-</div>
+#intro-canvas {
+  display: block;
+  margin: 0 auto 18px;
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.7));
+}
 
-<script src="script.js"></script>
-</body>
-</html>
+.intro-rules {
+  max-width: 620px;
+  margin: 0 auto 20px;
+  padding: 14px 16px;
+  background: rgba(26, 21, 18, 0.6);
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgba(201,162,39,0.1);
+  font-size: 13px;
+  line-height: 1.55;
+  text-align: left;
+}
+
+@media (min-width: 641px) { .intro-rules { padding: 18px 22px; font-size: 14px; line-height: 1.6; margin-bottom: 28px; } }
+
+.intro-rules p { margin-bottom: 8px; }
+.intro-rules p:last-child { margin-bottom: 0; }
+.intro-rules b { color: var(--accent-soft); }
+
+.btn-big {
+  font-size: clamp(15px, 4vw, 18px);
+  padding: 16px 24px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  animation: btnGlow 2.5s ease-in-out infinite;
+  width: 100%;
+  max-width: 420px;
+}
+
+@media (min-width: 641px) { .btn-big { width: auto; padding: 16px 40px; } }
+
+@keyframes btnGlow {
+  0%, 100% { box-shadow: 0 3px 0 #4a1515, 0 5px 10px rgba(0,0,0,0.4); }
+  50% { box-shadow: 0 3px 0 #4a1515, 0 5px 20px rgba(201,162,39,0.4); }
+}
+
+/* ===== ЗАГОЛОВКИ ===== */
+.main-title {
+  font-family: var(--font-main);
+  font-size: clamp(22px, 6vw, 40px);
+  text-align: center;
+  margin: 14px 0 6px;
+  color: var(--accent-soft);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  letter-spacing: 2px;
+  line-height: 1.15;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: clamp(12px, 3vw, 14px);
+  margin-bottom: 18px;
+  opacity: 0.8;
+  font-style: italic;
+  padding: 0 4px;
+}
+
+/* ===== КАРТОЧКИ ФРОНТОВ ===== */
+.fronts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+@media (min-width: 641px) { .fronts { grid-template-columns: repeat(3, 1fr); gap: 14px; } }
+
+.front-card {
+  background: linear-gradient(180deg, #2e241c 0%, #1f1913 100%);
+  border: 2px solid var(--panel-border);
+  border-radius: 4px;
+  padding: 0;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(201,162,39,0.15);
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+}
+
+.front-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-soft);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 15px rgba(201,162,39,0.2);
+}
+
+.front-card:active { transform: scale(0.98); }
+
+.front-card-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+  border-bottom: 1px solid var(--panel-border);
+  background: #1a1512;
+}
+
+@media (min-width: 641px) { .front-card-image { height: 140px; } }
+
+.front-card-body {
+  padding: 14px 12px 16px;
+}
+
+@media (min-width: 641px) { .front-card-body { padding: 18px 14px 20px; } }
+
+.front-title { font-family: var(--font-main); font-size: 17px; margin-bottom: 4px; color: var(--accent-soft); letter-spacing: 1px; }
+.front-desc { font-size: 12px; opacity: 0.7; margin-bottom: 6px; }
+.front-progress { 
+  font-size: 12px; 
+  color: var(--accent-soft); 
+  border-top: 1px solid rgba(201,162,39,0.2); 
+  padding-top: 6px; 
+  margin-top: 4px; 
+}
+
+/* ===== КАРТИНКА ФРОНТА В БОЮ ===== */
+.front-image-wrap {
+  width: 100%;
+  max-height: 160px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  border: 1px solid var(--panel-border);
+  border-radius: 3px;
+  background: #1a1512;
+}
+
+@media (min-width: 641px) { .front-image-wrap { max-height: 200px; margin-bottom: 18px; } }
+
+.front-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ===== ЗНАМЯ ===== */
+.banner {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 18px;
+  height: 26px;
+  padding: 2px;
+  background: #1a1512;
+  border: 1px solid var(--panel-border);
+  border-radius: 3px;
+}
+
+@media (min-width: 641px) { .banner { gap: 4px; height: 32px; padding: 3px; margin-bottom: 24px; } }
+
+.banner-segment {
+  flex: 1;
+  background: #2a221c;
+  border: 1px solid #3a2f24;
+  border-radius: 2px;
+  transition: background 0.4s, box-shadow 0.4s;
+}
+
+.banner-segment.filled { 
+  background: linear-gradient(180deg, #5a8c5a 0%, #3a5c3a 100%);
+  box-shadow: 0 0 8px rgba(74,124,74,0.5);
+  animation: pulse 0.6s ease;
+}
+
+.banner-segment.cracked { 
+  background: linear-gradient(180deg, #a83232 0%, #6b1f1f 100%);
+  box-shadow: 0 0 8px rgba(139,46,46,0.5);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* ===== ВОПРОС ===== */
+.question-text {
+  font-family: var(--font-main);
+  font-size: clamp(16px, 4.5vw, 24px);
+  margin-bottom: 16px;
+  line-height: 1.35;
+  padding: 10px 0;
+  border-top: 1px solid rgba(201,162,39,0.15);
+  border-bottom: 1px solid rgba(201,162,39,0.15);
+}
+
+@media (min-width: 641px) { .question-text { margin-bottom: 22px; padding: 12px 0; } }
+
+/* ===== ВАРИАНТЫ ОТВЕТОВ ===== */
+.options { display: flex; flex-direction: column; gap: 8px; }
+
+@media (min-width: 641px) { .options { gap: 10px; } }
+
+.option-btn {
+  background: linear-gradient(180deg, #2e241c 0%, #1f1913 100%);
+  border: 2px solid var(--panel-border);
+  color: var(--text);
+  padding: 12px 14px;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  transition: border-color 0.2s, background 0.2s, transform 0.1s;
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(201,162,39,0.1);
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1.3;
+}
+
+@media (min-width: 641px) { .option-btn { padding: 14px 18px; font-size: 16px; } }
+
+.option-btn::before {
+  content: "▸";
+  color: var(--accent-soft);
+  margin-right: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.option-btn:hover:not(:disabled) { 
+  border-color: var(--accent-soft);
+  background: linear-gradient(180deg, #3a2e22 0%, #2a2018 100%);
+}
+
+.option-btn:hover:not(:disabled)::before { opacity: 1; }
+.option-btn:active:not(:disabled) { transform: scale(0.99); }
+
+.option-btn.correct { 
+  border-color: var(--green); 
+  background: linear-gradient(180deg, #2a3a2a 0%, #1f2a1f 100%);
+  box-shadow: 0 0 12px rgba(74,124,74,0.3);
+}
+.option-btn.wrong { 
+  border-color: var(--red); 
+  background: linear-gradient(180deg, #3a2222 0%, #2a1818 100%);
+  box-shadow: 0 0 12px rgba(139,46,46,0.3);
+}
+.option-btn:disabled { cursor: default; }
+
+/* ===== ЗАМЕТКА ===== */
+.note {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, #332a22 0%, #241d16 100%);
+  border-left: 4px solid var(--accent-soft);
+  border-radius: 2px;
+  position: relative;
+  font-size: 13px;
+  line-height: 1.45;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+  animation: slideIn 0.3s ease;
+}
+
+@media (min-width: 641px) { .note { padding: 14px 18px; font-size: 14px; line-height: 1.5; margin-top: 18px; } }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.note-close {
+  position: absolute;
+  top: 2px; right: 6px;
+  background: none; border: none;
+  color: var(--text); font-size: 22px;
+  cursor: pointer; opacity: 0.6;
+  padding: 4px 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.note-close:hover { opacity: 1; }
+
+/* ===== РЕЗУЛЬТАТЫ ===== */
+.result-title {
+  font-family: var(--font-main);
+  font-size: clamp(20px, 5.5vw, 32px);
+  text-align: center;
+  margin: 20px 0 12px;
+  color: var(--accent-soft);
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  line-height: 1.2;
+}
+
+@media (min-width: 641px) { .result-title { margin: 28px 0 14px; } }
+
+.result-text { 
+  text-align: center; 
+  font-size: clamp(13px, 3.5vw, 16px); 
+  margin-bottom: 20px; 
+  line-height: 1.45; 
+  padding: 0 4px;
+}
+
+@media (min-width: 641px) { .result-text { margin-bottom: 26px; line-height: 1.5; } }
+
+/* ===== КНОПКИ ===== */
+.btn {
+  display: block;
+  margin: 0 auto 12px;
+  background: linear-gradient(180deg, #a83232 0%, #6b1f1f 100%);
+  border: 2px solid var(--accent-soft);
+  color: var(--text);
+  padding: 14px 24px;
+  font-size: clamp(14px, 3.8vw, 16px);
+  font-family: var(--font-ui);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  position: relative;
+  box-shadow: 0 3px 0 #4a1515, 0 5px 10px rgba(0,0,0,0.4);
+  letter-spacing: 0.5px;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  max-width: 360px;
+}
+
+@media (min-width: 641px) { .btn { padding: 12px 32px; width: auto; } }
+
+.btn:hover { 
+  background: linear-gradient(180deg, #c03a3a 0%, #8b2e2e 100%);
+  box-shadow: 0 3px 0 #4a1515, 0 5px 15px rgba(168,50,50,0.4);
+}
+
+.btn:active { 
+  transform: translateY(2px); 
+  box-shadow: 0 1px 0 #4a1515, 0 2px 5px rgba(0,0,0,0.4);
+}
+
+.btn-secondary { 
+  background: linear-gradient(180deg, #3a2e22 0%, #241d16 100%);
+  box-shadow: 0 3px 0 #1a1512, 0 5px 10px rgba(0,0,0,0.4);
+}
+
+.btn-secondary:hover { 
+  background: linear-gradient(180deg, #4a3a2a 0%, #2e241c 100%);
+  box-shadow: 0 3px 0 #1a1512, 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.share-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.share-row .btn { width: 100%; max-width: 360px; margin-bottom: 8px; }
+
+@media (min-width: 641px) { .share-row .btn { width: auto; margin-bottom: 12px; } }
+
+#victory-canvas {
+  display: block;
+  margin: 0 auto 14px;
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 6px 15px rgba(0,0,0,0.6));
+}
+
+@media (min-width: 641px) { #victory-canvas { margin-bottom: 18px; } }
+
+.timeline {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-main);
+  font-size: 12px;
+  color: var(--accent-soft);
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  letter-spacing: 1px;
+}
+
+@media (min-width: 641px) { .timeline { gap: 16px; font-size: 14px; margin-bottom: 18px; } }
+
+.timeline span { position: relative; }
+.timeline span:not(:last-child)::after {
+  content: "→";
+  margin-left: 10px;
+  opacity: 0.5;
+}
+
+@media (min-width: 641px) { .timeline span:not(:last-child)::after { margin-left: 16px; } }

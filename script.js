@@ -3,13 +3,10 @@
 // Например: image: 'https://example.com/smuta.jpg' -->
 // Если ссылки нет — оставь пустые кавычки: image: '' -->
 // ============================================================ -->
-// ============================================================ -->
-// ВНИМАНИЕ: ЧТОБЫ ДОБАВИТЬ КАРТИНКУ ФРОНТУ, ВСТАВЬ ССЫЛКУ В ПОЛЕ image -->
-// ============================================================ -->
 const fronts = [
   {
     id: 'smuta',
-    image: '', // <-- ССЫЛКА НА КАРТИНКУ
+    image: '', // <-- ССЫЛКА НА КАРТИНКУ ФРОНТА «СМУТНОЕ ВРЕМЯ»
     title: 'Смутное время',
     desc: 'История ополчения Минина и Пожарского',
     questions: [
@@ -24,7 +21,7 @@ const fronts = [
   },
   {
     id: 'russia',
-    image: '', // <-- ССЫЛКА НА КАРТИНКУ
+    image: '', // <-- ССЫЛКА НА КАРТИНКУ ФРОНТА «РОССИЯ СЕГОДНЯ»
     title: 'Россия сегодня',
     desc: 'Символы и праздники страны',
     questions: [
@@ -39,7 +36,7 @@ const fronts = [
   },
   {
     id: 'kostroma',
-    image: '', // <-- ССЫЛКА НА КАРТИНКУ
+    image: '', // <-- ССЫЛКА НА КАРТИНКУ ФРОНТА «КОСТРОМСКОЙ КРАЙ»
     title: 'Костромской край',
     desc: 'Честняков и народные промыслы',
     questions: [
@@ -78,11 +75,12 @@ function showScreen(id) {
   if (el) el.classList.add('active');
 }
 
+// ===== МУЗЫКА (громкость 0.2) =====
 function tryStartMusic() {
   if (musicStarted) return;
   const music = $('bg-music');
   if (music && music.querySelector('source') && music.querySelector('source').src) {
-    music.volume = 0.3;
+    music.volume = 0.2; // <-- ГРОМКОСТЬ 20%
     music.play().then(() => { musicStarted = true; }).catch(() => {});
   }
 }
@@ -121,7 +119,7 @@ function shuffle(arr) {
   return a;
 }
 
-// ===== ЭКРАН ВЫБОРА (БЕЗ ЭМОДЗИ) =====
+// ===== ЭКРАН ВЫБОРА =====
 function renderFronts() {
   const container = $('fronts-container');
   if (!container) return;
@@ -129,7 +127,7 @@ function renderFronts() {
   fronts.forEach(f => {
     const prog = state.progress[f.id];
     const card = document.createElement('div');
-    card.className = 'front-card';
+    card.className = 'front-card' + (f.image ? '' : ' no-image');
     const imgHtml = f.image
       ? `<img class="front-card-image" src="${f.image}" alt="${f.title}" onerror="this.style.display='none'">`
       : '';
@@ -180,7 +178,7 @@ function resumeFront(front) {
 
   renderBanner();
   updateHud();
-  updateBanner(); // Заполняем знамя сразу при входе
+  updateBanner();
   renderNextQuestion();
   showScreen('screen-battle');
 }
@@ -257,7 +255,6 @@ function renderNextQuestion() {
   state.answered = false;
 }
 
-// ===== ОТВЕТ =====
 function answer(btn, isCorrect, q, questionIdx) {
   if (state.answered) return;
   state.answered = true;
@@ -266,8 +263,6 @@ function answer(btn, isCorrect, q, questionIdx) {
 
   const front = state.currentFront;
   const prog = state.progress[front.id];
-  
-  // ВАЖНО: Добавляем индекс в answeredIndices В ЛЮБОМ СЛУЧАЕ
   prog.answeredIndices.push(questionIdx);
 
   if (isCorrect) {
@@ -277,20 +272,10 @@ function answer(btn, isCorrect, q, questionIdx) {
     updateBanner();
     updateHud();
     showNote(q.note);
-
-    // ПРОВЕРКА НА МГНОВЕННУЮ ПОБЕДУ
-    if (prog.correctCount === 7) {
-      setTimeout(() => {
-        showVictory();
-      }, 1200);
-      return;
-    }
-
     setTimeout(() => {
       renderFronts();
       showScreen('screen-select');
     }, 1200);
-
   } else {
     btn.classList.add('wrong');
     prog.errorCount++;
@@ -302,7 +287,6 @@ function answer(btn, isCorrect, q, questionIdx) {
     setTimeout(() => {
       if (prog.errorCount === 1) {
         $('breach-text').textContent = `Фронт «${front.title}» прорван. Прогресс сохранён — вернись и продолжи с того же места.`;
-        showScreen('screen-breach'); // (исправлено на screen-breach ниже)
         showScreen('screen-breach');
       } else {
         showScreen('screen-retreat');
@@ -326,7 +310,7 @@ function showVictory() {
   showScreen('screen-victory');
 }
 
-// ===== ЩИТ НА ПОБЕДУ (ЗАМЕНИЛ ОРЛА НА МЕДВЕДЯ) =====
+// ===== ЩИТ НА ПОБЕДУ =====
 function drawVictoryCanvas() {
   const canvas = $('victory-canvas');
   if (!canvas) return;
@@ -425,7 +409,7 @@ function drawVictoryCanvas() {
   if (vkImg) vkImg.setAttribute('content', dataUrl);
 }
 
-// ===== ЩИТ С МЕЧАМИ (ЗАМЕНИЛ ОРЛА НА МЕДВЕДЯ) =====
+// ===== ЩИТ С МЕЧАМИ =====
 function drawIntroShield() {
   const canvas = document.getElementById('intro-canvas');
   if (!canvas) return;
@@ -527,12 +511,11 @@ function drawIntroShield() {
   shieldPath(18);
   ctx.stroke();
 
-  // МЕДВЕДЬ ВМЕСТО ОРЛА
   ctx.fillStyle = 'rgba(232,209,138,0.85)';
   ctx.font = 'bold 38px Georgia, serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('🐻', cx, h / 2 + 5);
+  ctx.fillText('🦅', cx, h / 2 + 5);
 
   const rivets = [
     [left + 18, top + 18],
@@ -552,7 +535,7 @@ function drawIntroShield() {
   });
 }
 
-// ===== ДЫМ =====
+// ===== ДЫМ НА ВЕСЬ ЭКРАН =====
 function initSmoke() {
   const canvas = document.getElementById('smoke-canvas');
   if (!canvas) return;
@@ -571,35 +554,37 @@ function initSmoke() {
   window.addEventListener('resize', resize);
 
   const smokeParticles = [];
-  const SMOKE_COUNT = 40;
+  const SMOKE_COUNT = 60;
 
   function createSmoke() {
+    const yBias = Math.random() < 0.7
+      ? h * (0.5 + Math.random() * 0.5)
+      : h * Math.random();
     return {
       x: Math.random() * w,
-      y: h + Math.random() * 20,
-      r: 30 + Math.random() * 60,
+      y: yBias,
+      r: 40 + Math.random() * 80,
       vx: (Math.random() - 0.5) * 0.3,
-      vy: -0.2 - Math.random() * 0.5,
+      vy: -0.15 - Math.random() * 0.4,
       life: 0,
-      maxLife: 300 + Math.random() * 300,
-      alpha: 0.08 + Math.random() * 0.12
+      maxLife: 400 + Math.random() * 400,
+      alpha: 0.06 + Math.random() * 0.1
     };
   }
 
   for (let i = 0; i < SMOKE_COUNT; i++) {
     const p = createSmoke();
-    p.y = Math.random() * h;
     p.life = Math.random() * p.maxLife;
     smokeParticles.push(p);
   }
 
   const embers = [];
-  const EMBER_COUNT = 18;
+  const EMBER_COUNT = 25;
 
   function createEmber() {
     return {
       x: Math.random() * w,
-      y: h - Math.random() * 10,
+      y: h - Math.random() * (h * 0.3),
       r: 1 + Math.random() * 2,
       vx: (Math.random() - 0.5) * 0.4,
       vy: -0.4 - Math.random() * 0.8,
@@ -622,9 +607,9 @@ function initSmoke() {
       p.life++;
       p.x += p.vx;
       p.y += p.vy;
-      p.r += 0.15;
+      p.r += 0.12;
 
-      if (p.life > p.maxLife) {
+      if (p.life > p.maxLife || p.y + p.r < 0) {
         smokeParticles[i] = createSmoke();
         return;
       }
@@ -633,6 +618,8 @@ function initSmoke() {
       let alpha = p.alpha;
       if (lifeRatio < 0.2) alpha *= lifeRatio / 0.2;
       if (lifeRatio > 0.7) alpha *= (1 - lifeRatio) / 0.3;
+      const heightFactor = Math.max(0, Math.min(1, p.y / h));
+      alpha *= (0.2 + heightFactor * 0.8);
 
       const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
       grad.addColorStop(0, `rgba(120, 100, 85, ${alpha})`);
@@ -696,7 +683,10 @@ function init() {
   const btnRestart = document.getElementById('btn-restart');
   if (btnRestart) btnRestart.addEventListener('click', () => {
     state.attempt++;
-    if (state.currentFront) resetFrontProgress(state.currentFront.id);
+    if (state.currentFront) {
+      resetFrontProgress(state.currentFront.id);
+    }
+    state.currentFront = null;
     updateHud();
     renderFronts();
     showScreen('screen-select');

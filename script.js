@@ -138,7 +138,7 @@ function renderFronts() {
       <div class="front-card-body">
         <div class="front-title">${f.title}</div>
         <div class="front-desc">${f.desc}</div>
-        <div class="front-progress">Щит: ${prog.correctCount}/7</div>
+        <div class="front-progress">Прогресс фронта: ${prog.correctCount}/7</div>
       </div>
     `;
     card.addEventListener('click', () => {

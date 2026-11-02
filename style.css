@@ -68,30 +68,28 @@ body {
 @media (min-width: 641px) { #app { padding: 28px; } }
 
 /* ===== ЧЕТЫРЕ УГОЛКА-ЗАКЛЁПКИ ===== */
-#app::before,
-#app::after,
-#app .corner-tl,
-#app .corner-tr {
-  content: "";
+#app .corner {
   position: absolute;
   width: 10px;
   height: 10px;
   border: 2px solid var(--accent-soft);
   border-radius: 2px;
   opacity: 0.6;
+  pointer-events: none;
+  z-index: 3;
 }
 
-#app::before { top: 4px; left: 4px; }
-#app::after { bottom: 4px; right: 4px; }
-#app .corner-tl { top: 4px; right: 4px; }
-#app .corner-tr { bottom: 4px; left: 4px; }
+#app .corner-tl { top: 4px; left: 4px; }
+#app .corner-tr { top: 4px; right: 4px; }
+#app .corner-bl { bottom: 4px; left: 4px; }
+#app .corner-br { bottom: 4px; right: 4px; }
 
 @media (min-width: 641px) {
-  #app::before, #app::after, #app .corner-tl, #app .corner-tr { width: 14px; height: 14px; }
-  #app::before { top: 6px; left: 6px; }
-  #app::after { bottom: 6px; right: 6px; }
-  #app .corner-tl { top: 6px; right: 6px; }
-  #app .corner-tr { bottom: 6px; left: 6px; }
+  #app .corner { width: 14px; height: 14px; }
+  #app .corner-tl { top: 6px; left: 6px; }
+  #app .corner-tr { top: 6px; right: 6px; }
+  #app .corner-bl { bottom: 6px; left: 6px; }
+  #app .corner-br { bottom: 6px; right: 6px; }
 }
 
 .screen { display: none; }

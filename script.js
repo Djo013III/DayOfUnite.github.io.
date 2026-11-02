@@ -6,7 +6,7 @@
 const fronts = [
   {
     id: 'smuta',
-    image: '', // <-- ССЫЛКА НА КАРТИНКУ ФРОНТА «СМУТНОЕ ВРЕМЯ»
+    image: 'https://artmuseumnn.ru/upload/image/2.%20%D0%9C%D0%B8%D0%BD%D0%B8%D0%BD%20%D0%B8%20%D0%9F%D0%BE%D0%B6%D0%B0%D1%80%D1%81%D0%BA%D0%B8%D0%B9.%201850.%20%D0%A5%D0%BE%D0%BB%D1%81%D1%82,%20%D0%BC%D0%B0%D1%81%D0%BB%D0%BE.%2067.5x107.%20%D0%9D%D0%93%D0%A5%D0%9C_(1).jpg', // <-- ССЫЛКА НА КАРТИНКУ ФРОНТА «СМУТНОЕ ВРЕМЯ»
     title: 'Смутное время',
     desc: 'История ополчения Минина и Пожарского',
     questions: [
@@ -21,7 +21,7 @@ const fronts = [
   },
   {
     id: 'russia',
-    image: '', // <-- ССЫЛКА НА КАРТИНКУ ФРОНТА «РОССИЯ СЕГОДНЯ»
+    image: 'https://www.art-vernissage.ru/media/cache/05/3c/053cc66caecf56a96975967b16e72e5a.jpg', // <-- ССЫЛКА НА КАРТИНКУ ФРОНТА «РОССИЯ СЕГОДНЯ»
     title: 'Россия сегодня',
     desc: 'Символы и праздники страны',
     questions: [
@@ -36,7 +36,7 @@ const fronts = [
   },
   {
     id: 'kostroma',
-    image: '', // <-- ССЫЛКА НА КАРТИНКУ ФРОНТА «КОСТРОМСКОЙ КРАЙ»
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6QEl77pJ4RXKZQwa0oQLSZ3W-XnMB11ZC_GkpGXw3EISlfEJ1B8Gz6lg&s=10', // <-- ССЫЛКА НА КАРТИНКУ ФРОНТА «КОСТРОМСКОЙ КРАЙ»
     title: 'Костромской край',
     desc: 'Честняков и народные промыслы',
     questions: [
@@ -239,7 +239,7 @@ function renderNextQuestion() {
     } else {
       // Вопросы кончились, но не 7/7 — не сбрасываем, показываем поражение
       if (state.totalErrors === 1) {
-        $('breach-text').textContent = `Фронт «${front.title}» прорван. Прогресс сохранён — вернись и продолжи с того же места.`;
+        $('breach-text').textContent = `Фронт «${front.title}» прорван. Прогресс сохранён и мы отбились, но этого мало — вернись и продолжи на другом фронте.`;
         showScreen('screen-breach');
       } else {
         resetAllProgress();
@@ -304,7 +304,7 @@ function answer(btn, isCorrect, q, questionIdx) {
 
     setTimeout(() => {
       if (state.totalErrors === 1) {
-        $('breach-text').textContent = `Фронт «${front.title}» прорван. Прогресс сохранён и мы отбились, но этого мало — вернись и продолжи на другом фронте.`;
+        $('breach-text').textContent = `Фронт «${front.title}» под угрозой. Прогресс сохранён, вернись и продолжи.`;
         showScreen('screen-breach');
       } else {
         // ВТОРАЯ ОШИБКА — ПОЛНЫЙ СБРОС ВСЕХ ФРОНТОВ

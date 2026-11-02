@@ -59,9 +59,7 @@ let state = {
 
 fronts.forEach(f => {
   state.progress[f.id] = { correctCount: 0, errorCount: 0, answeredIndices: [] };
-});
-
-// ===== DOM =====
+});// ===== DOM =====
 const $ = id => document.getElementById(id);
 const screens = document.querySelectorAll('.screen');
 let audioCtx = null;

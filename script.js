@@ -680,18 +680,18 @@ function init() {
   const btnBackSelect = document.getElementById('btn-back-select');
   if (btnBackSelect) btnBackSelect.addEventListener('click', () => showScreen('screen-select'));
 
-  const btnRestart = document.getElementById('btn-restart');
-  if (btnRestart) btnRestart.addEventListener('click', () => {
-    state.attempt++;
-    if (state.currentFront) {
-      resetFrontProgress(state.currentFront.id);
-    }
-    state.currentFront = null;
-    updateHud();
-    renderFronts();
-    showScreen('screen-select');
+ const btnRestart = document.getElementById('btn-restart');
+if (btnRestart) btnRestart.addEventListener('click', () => {
+  state.attempt++;
+  // СБРОС ВСЕХ ФРОНТОВ
+  fronts.forEach(f => {
+    state.progress[f.id] = { correctCount: 0, errorCount: 0, answeredIndices: [] };
   });
-
+  state.currentFront = null;
+  updateHud();
+  renderFronts();
+  showScreen('screen-select');
+});
   const btnAnother = document.getElementById('btn-another');
   if (btnAnother) btnAnother.addEventListener('click', () => showScreen('screen-select'));
 

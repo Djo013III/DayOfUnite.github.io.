@@ -15,13 +15,10 @@
 
 html, body { overflow-x: hidden; }
 
-/* ============================================================ */
-/* ФОНОВОЕ ИЗОБРАЖЕНИЕ: ЗАМЕНИ bg.jpg НА СВОЙ ФАЙЛ */
-/* Положи файл рядом с index.html. Если файла нет — останется тёмный фон. */
-/* ============================================================ */
+/* ФОНОВОЕ ИЗОБРАЖЕНИЕ */
 body {
   background-color: var(--bg);
-  background-image: url('bg.jpg'); /* <-- ЗДЕСЬ СВОЁ ИЗОБРАЖЕНИЕ */
+  background-image: url('bg.jpg'); /* <-- СЮДА СВОЮ КАРТИНКУ */
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -36,18 +33,21 @@ body {
 
 @media (min-width: 641px) { body { padding: 16px; } }
 
+/* ТУМАН: СДЕЛАЛ ЕГО ЗАМЕТНЕЕ */
 #smoke-canvas {
   position: fixed;
   bottom: 0; left: 0;
   width: 100%;
-  height: 25vh;
+  height: 30vh; /* Чуть выше, чтобы дымка читалась */
   pointer-events: none;
   z-index: 1;
-  opacity: 0.85;
+  opacity: 0.9;
+  background: linear-gradient(to top, rgba(120, 100, 85, 0.1) 0%, transparent 100%);
 }
 
-@media (max-width: 640px) { #smoke-canvas { height: 18vh; } }
+@media (max-width: 640px) { #smoke-canvas { height: 22vh; } }
 
+/* ПАНЕЛЬ (БЕЗ КРИВЫХ КВАДРАТОВ, ТОЛЬКО ЧЕТКАЯ РАМКА) */
 #app {
   width: 100%;
   max-width: 900px;
@@ -57,41 +57,14 @@ body {
   padding: 16px;
   position: relative;
   z-index: 2;
+  /* Двойная обводка через box-shadow, она ровная по всем углам */
   box-shadow: 
     0 0 0 1px #1a1512,
     0 0 0 3px var(--panel-border),
-    0 0 0 5px #1a1512,
     0 0 20px rgba(0,0,0,0.6);
 }
 
 @media (min-width: 641px) { #app { padding: 28px; } }
-
-/* ===== УГОЛКИ-ЗАКЛЁПКИ — ВСЕ ЧЕТЫРЕ ===== */
-#app::before,
-#app::after,
-#app .corner-tl,
-#app .corner-tr {
-  content: "";
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border: 2px solid var(--accent-soft);
-  border-radius: 2px;
-  opacity: 0.6;
-}
-
-#app::before { top: 4px; left: 4px; }
-#app::after { bottom: 4px; right: 4px; }
-#app .corner-tl { top: 4px; right: 4px; }
-#app .corner-tr { bottom: 4px; left: 4px; }
-
-@media (min-width: 641px) {
-  #app::before, #app::after, #app .corner-tl, #app .corner-tr { width: 14px; height: 14px; }
-  #app::before { top: 6px; left: 6px; }
-  #app::after { bottom: 6px; right: 6px; }
-  #app .corner-tl { top: 6px; right: 6px; }
-  #app .corner-tr { bottom: 6px; left: 6px; }
-}
 
 .screen { display: none; }
 .screen.active { display: block; }
@@ -236,16 +209,6 @@ body {
   overflow: hidden;
 }
 
-.front-card::before {
-  content: "";
-  position: absolute;
-  top: 4px; left: 4px; right: 4px; bottom: 4px;
-  border: 1px solid rgba(201,162,39,0.25);
-  border-radius: 2px;
-  pointer-events: none;
-  z-index: 2;
-}
-
 .front-card:hover {
   transform: translateY(-3px);
   border-color: var(--accent-soft);
@@ -254,7 +217,6 @@ body {
 
 .front-card:active { transform: scale(0.98); }
 
-/* Картинка карточки */
 .front-card-image {
   width: 100%;
   height: 120px;

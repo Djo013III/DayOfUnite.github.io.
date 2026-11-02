@@ -1,443 +1,686 @@
-:root {
-  --bg: #1a1512;
-  --panel: #2a221c;
-  --panel-border: #4a3b2e;
-  --text: #e8dcc8;
-  --accent: #a83232;
-  --accent-soft: #c9a227;
-  --green: #4a7c4a;
-  --red: #8b2e2e;
-  --font-main: Georgia, 'Times New Roman', serif;
-  --font-ui: system-ui, -apple-system, sans-serif;
+// ===== ДАННЫЕ ФРОНТОВ =====
+const fronts = [
+  {
+    id: 'smuta',
+    icon: '⚔️',
+    title: 'Смутное время',
+    desc: 'История ополчения Минина и Пожарского',
+    questions: [
+      { q: 'Когда отмечают День народного единства?', options: ['4 ноября', '1 января', '12 июня', '9 мая'], correct: 0, note: 'Праздник связан с событиями 1612 года, когда ополчение освободило Москву.' },
+      { q: 'Кто возглавил народное ополчение?', options: ['Минин и Пожарский', 'Пётр I и Иван Грозный', 'Александр Невский и Дмитрий Донской', 'Екатерина II и Павел I'], correct: 0, note: 'Кузьма Минин и князь Дмитрий Пожарский собрали народное ополчение.' },
+      { q: 'От кого освободили Москву в 1612 году?', options: ['От польских интервентов', 'От французов', 'От монголов', 'От шведов'], correct: 0, note: 'Ополчение выдворило из столицы польских интервентов.' },
+      { q: 'Что означает слово «единство» в названии праздника?', options: ['Когда народ вместе', 'Когда все молчат', 'Когда один правит', 'Когда все отдыхают'], correct: 0, note: 'Праздник — про сплочённость народа перед общей бедой.' },
+      { q: 'Где стоит памятник Минину и Пожарскому?', options: ['В Москве на Красной площади', 'В Санкт-Петербурге', 'В Костроме', 'В Казани'], correct: 0, note: 'Памятник стоит в самом центре Москвы.' },
+      { q: 'В каком году произошли эти события?', options: ['1612', '1812', '1945', '2005'], correct: 0, note: 'Ополчение освободило Москву в 1612 году.' },
+      { q: 'Когда в современной России впервые отметили этот праздник?', options: ['В 2005 году', 'В 1991 году', 'В 1612 году', 'В 2020 году'], correct: 0, note: 'Праздник стал государственным и впервые отмечался в 2005 году.' }
+    ]
+  },
+  {
+    id: 'russia',
+    icon: '🐻',
+    title: 'Россия сегодня',
+    desc: 'Символы и праздники страны',
+    questions: [
+      { q: 'Какие цвета у флага России?', options: ['Белый, синий, красный', 'Красный, жёлтый, зелёный', 'Синий, белый, зелёный', 'Чёрный, жёлтый, белый'], correct: 0, note: 'Белый — мир, синий — верность, красный — сила.' },
+      { q: 'Кто изображён на гербе России?', options: ['Двуглавый орёл', 'Медведь', 'Лев', 'Конь'], correct: 0, note: 'Орёл держит скипетр и державу — символы власти.' },
+      { q: 'Как называется главная песня страны?', options: ['Гимн', 'Частушка', 'Колыбельная', 'Марш'], correct: 0, note: 'Гимн — главная песня страны, его слушают стоя.' },
+      { q: 'Какой город — столица России?', options: ['Москва', 'Санкт-Петербург', 'Кострома', 'Казань'], correct: 0, note: 'Москва — столица и самый большой город России.' },
+      { q: 'Что слушают стоя?', options: ['Гимн', 'Сказку', 'Песню о дружбе', 'Тишину'], correct: 0, note: 'Гимн слушают стоя — так выражают уважение к стране.' },
+      { q: 'Что изображено на гербе России?', options: ['Двуглавый орёл', 'Медведь', 'Лев', 'Конь'], correct: 0, note: 'Орёл держит скипетр и державу — символы власти.' },
+      { q: 'Сколько народов живёт в России?', options: ['Более 190', '10', '50', '2'], correct: 0, note: 'Россия — многонациональная страна.' }
+    ]
+  },
+  {
+    id: 'kostroma',
+    icon: '🌲',
+    title: 'Костромской край',
+    desc: 'Честняков и народные промыслы',
+    questions: [
+      { q: 'В каком году родился Ефим Честняков?', options: ['1874', '1900', '1850', '1920'], correct: 0, note: 'Честняков родился в 1874 году.' },
+      { q: 'В какой деревне родился Честняков?', options: ['Шаблово', 'Петровское', 'Красное', 'Галич'], correct: 0, note: 'Шаблово — родная деревня художника.' },
+      { q: 'Что такое петровская игрушка?', options: ['Глиняная свистулька', 'Деревянная кукла', 'Тряпичный мяч', 'Соломенная шляпа'], correct: 0, note: 'Это глиняная свистулька из тёмной глины.' },
+      { q: 'Чем петровская игрушка отличается от других?', options: ['Её не раскрашивают', 'Её делают из дерева', 'Её делают только зимой', 'В неё нельзя свистеть'], correct: 0, note: 'Узор выдавливают прямо в глине, краски не используют.' },
+      { q: 'Какое кружево плетут в Костромской области?', options: ['Галичское', 'Вологодское', 'Елецкое', 'Михайловское'], correct: 0, note: 'Галичское кружево плели из льна и шёлка.' },
+      { q: 'Что делают красносельские мастера?', options: ['Ажурные узоры из проволоки', 'Глиняные свистульки', 'Льняные рубахи', 'Деревянные ложки'], correct: 0, note: 'Это скань — узор из тонкой проволоки, похожий на кружево.' },
+      { q: 'Какое ремесло было развито в Галичском крае?', options: ['Гончарное', 'Космическое', 'Морское', 'Цирковое'], correct: 0, note: 'Галичские гончары славились на всю губернию.' }
+    ]
+  }
+];
+
+// ===== СОСТОЯНИЕ =====
+let state = {
+  attempt: 1,
+  currentFront: null,
+  correctCount: 0,
+  errorCount: 0,
+  answered: false,
+  progress: {}
+};
+
+fronts.forEach(f => {
+  state.progress[f.id] = { correctCount: 0, errorCount: 0, answeredIndices: [] };
+});
+
+// ===== DOM =====
+const $ = id => document.getElementById(id);
+const screens = document.querySelectorAll('.screen');
+let audioCtx = null;
+let musicStarted = false;
+
+function showScreen(id) {
+  screens.forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* ============================================================ */
-/* ФОНОВОЕ ИЗОБРАЖЕНИЕ: ЗАМЕНИ bg.jpg НА СВОЙ ФАЙЛ */
-/* Положи файл рядом с index.html. Если файла нет — останется тёмный фон. */
-/* ============================================================ */
-body {
-  background-color: var(--bg);
-  background-image: url('bg.jpg'); /* <-- ЗДЕСЬ СВОЁ ИЗОБРАЖЕНИЕ */
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  color: var(--text);
-  font-family: var(--font-ui);
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  padding: 16px;
+// ===== МУЗЫКА =====
+function tryStartMusic() {
+  if (musicStarted) return;
+  const music = $('bg-music');
+  if (music && music.querySelector('source') && music.querySelector('source').src) {
+    music.volume = 0.3;
+    music.play().then(() => { musicStarted = true; }).catch(() => {});
+  }
 }
 
-/* Дым по низу экрана */
-#smoke-canvas {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 25vh;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.85;
+// ===== ЗВУК (Web Audio) =====
+function playSound(type) {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    if (type === 'correct') {
+      osc.frequency.value = 660;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.4);
+    } else {
+      osc.frequency.value = 120;
+      osc.type = 'sawtooth';
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.5);
+    }
+  } catch(e) {}
 }
 
-@media (max-width: 640px) {
-  #smoke-canvas { height: 20vh; }
+// ===== ПЕРЕМЕШИВАНИЕ =====
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
-#app {
-  width: 100%;
-  max-width: 900px;
-  background: rgba(42, 34, 28, 0.94);
-  border: 2px solid var(--panel-border);
-  border-radius: 4px;
-  padding: 28px;
-  position: relative;
-  z-index: 2;
-  box-shadow: 
-    0 0 0 1px #1a1512,
-    0 0 0 3px var(--panel-border),
-    0 0 0 5px #1a1512,
-    0 0 20px rgba(0,0,0,0.6);
+// ===== ЭКРАН ВЫБОРА =====
+function renderFronts() {
+  const container = $('fronts-container');
+  container.innerHTML = '';
+  fronts.forEach(f => {
+    const prog = state.progress[f.id];
+    const card = document.createElement('div');
+    card.className = 'front-card';
+    card.innerHTML = `
+      <span class="front-icon">${f.icon}</span>
+      <div class="front-title">${f.title}</div>
+      <div class="front-desc">${f.desc}</div>
+      <div class="front-progress">Щит: ${prog.correctCount}/7 · Ошибок: ${prog.errorCount}</div>
+    `;
+    card.addEventListener('click', () => {
+      tryStartMusic();
+      resumeFront(f);
+    });
+    container.appendChild(card);
+  });
 }
 
-/* Уголки-заклёпки панели */
-#app::before,
-#app::after {
-  content: "";
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border: 2px solid var(--accent-soft);
-  border-radius: 2px;
-  opacity: 0.6;
-}
-#app::before { top: 6px; left: 6px; }
-#app::after { bottom: 6px; right: 6px; }
+function resumeFront(front) {
+  state.currentFront = front;
+  const prog = state.progress[front.id];
+  state.correctCount = prog.correctCount;
+  state.errorCount = prog.errorCount;
+  state.answered = false;
 
-.screen { display: none; }
-.screen.active { display: block; }
+  if (prog.answeredIndices.length >= 7) {
+    if (prog.correctCount === 7) {
+      showVictory();
+    } else {
+      resetFrontProgress(front.id);
+      resumeFront(front);
+    }
+    return;
+  }
 
-/* ===== HUD ===== */
-.hud {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 10px;
-  margin-bottom: 18px;
-  font-size: 14px;
-  flex-wrap: wrap;
-  gap: 8px;
-  position: relative;
+  $('front-name').textContent = front.title;
+  renderBanner();
+  updateHud();
+  renderNextQuestion();
+  showScreen('screen-battle');
 }
 
-.hud::after {
-  content: "";
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, transparent 0%, var(--accent-soft) 20%, var(--accent-soft) 80%, transparent 100%);
-  opacity: 0.5;
-  border-radius: 2px;
+// ===== ЗНАМЯ =====
+function renderBanner() {
+  const banner = $('banner');
+  banner.innerHTML = '';
+  for (let i = 0; i < 7; i++) {
+    const seg = document.createElement('div');
+    seg.className = 'banner-segment';
+    banner.appendChild(seg);
+  }
 }
 
-.hud-title { font-family: var(--font-main); font-weight: bold; color: var(--accent-soft); letter-spacing: 1px; text-transform: uppercase; font-size: 13px; }
-.hud-item b { color: var(--accent-soft); }
-
-/* ===== СТАРТОВЫЙ ЭКРАН ===== */
-.intro-title {
-  font-family: var(--font-main);
-  font-size: clamp(32px, 7vw, 56px);
-  text-align: center;
-  margin: 20px 0 6px;
-  color: var(--accent-soft);
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  text-shadow: 0 3px 8px rgba(0,0,0,0.9), 0 0 20px rgba(201,162,39,0.2);
+function updateBanner() {
+  const segs = document.querySelectorAll('.banner-segment');
+  const prog = state.progress[state.currentFront.id];
+  segs.forEach((seg, i) => {
+    seg.classList.remove('filled', 'cracked');
+    if (i < prog.correctCount) seg.classList.add('filled');
+    else if (i >= 7 - prog.errorCount) seg.classList.add('cracked');
+  });
 }
 
-.intro-subtitle {
-  text-align: center;
-  font-size: clamp(14px, 2.5vw, 18px);
-  font-style: italic;
-  opacity: 0.8;
-  margin-bottom: 20px;
-  letter-spacing: 1px;
+function updateHud() {
+  const prog = state.progress[state.currentFront?.id];
+  if (prog) {
+    $('shield-count').textContent = prog.correctCount;
+    $('error-count').textContent = prog.errorCount;
+  }
+  $('attempt-count').textContent = state.attempt;
 }
 
-#intro-canvas {
-  display: block;
-  margin: 0 auto 24px;
-  max-width: 100%;
-  height: auto;
-  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.7));
+// ===== ВОПРОС =====
+function renderNextQuestion() {
+  const front = state.currentFront;
+  const prog = state.progress[front.id];
+
+  let nextIdx = -1;
+  for (let i = 0; i < front.questions.length; i++) {
+    if (!prog.answeredIndices.includes(i)) {
+      nextIdx = i;
+      break;
+    }
+  }
+
+  if (nextIdx === -1) {
+    if (prog.correctCount === 7) {
+      showVictory();
+    } else {
+      resetFrontProgress(front.id);
+      resumeFront(front);
+    }
+    return;
+  }
+
+  const q = front.questions[nextIdx];
+  $('question-text').textContent = q.q;
+  const optsContainer = $('options-container');
+  optsContainer.innerHTML = '';
+  const correctText = q.options[q.correct];
+  const shuffledOpts = shuffle(q.options);
+
+  shuffledOpts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => answer(btn, opt === correctText, q, nextIdx));
+    optsContainer.appendChild(btn);
+  });
+
+  $('note').hidden = true;
+  state.answered = false;
 }
 
-.intro-rules {
-  max-width: 620px;
-  margin: 0 auto 28px;
-  padding: 18px 22px;
-  background: rgba(26, 21, 18, 0.6);
-  border: 1px solid var(--panel-border);
-  border-radius: 4px;
-  box-shadow: inset 0 0 0 1px rgba(201,162,39,0.1);
-  font-size: 14px;
-  line-height: 1.6;
+// ===== ОТВЕТ =====
+function answer(btn, isCorrect, q, questionIdx) {
+  if (state.answered) return;
+  state.answered = true;
+  const allBtns = document.querySelectorAll('.option-btn');
+  allBtns.forEach(b => b.disabled = true);
+
+  const front = state.currentFront;
+  const prog = state.progress[front.id];
+  prog.answeredIndices.push(questionIdx);
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    prog.correctCount++;
+    playSound('correct');
+    updateBanner();
+    updateHud();
+    showNote(q.note);
+    setTimeout(() => {
+      renderFronts();
+      showScreen('screen-select');
+    }, 1200);
+  } else {
+    btn.classList.add('wrong');
+    prog.errorCount++;
+    playSound('wrong');
+    updateBanner();
+    updateHud();
+    showNote(q.note);
+
+    setTimeout(() => {
+      if (prog.errorCount === 1) {
+        $('breach-text').textContent = `Фронт «${front.title}» прорван. Прогресс сохранён — вернись и продолжи с того же места.`;
+        showScreen('screen-breach');
+      } else {
+        showScreen('screen-retreat');
+      }
+      renderFronts();
+    }, 1500);
+  }
 }
 
-.intro-rules p { margin-bottom: 10px; }
-.intro-rules p:last-child { margin-bottom: 0; }
-.intro-rules b { color: var(--accent-soft); }
-
-.btn-big {
-  font-size: 18px;
-  padding: 16px 40px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  animation: btnGlow 2.5s ease-in-out infinite;
+function showNote(text) {
+  $('note-text').textContent = text;
+  $('note').hidden = false;
 }
 
-@keyframes btnGlow {
-  0%, 100% { box-shadow: 0 3px 0 #4a1515, 0 5px 10px rgba(0,0,0,0.4); }
-  50% { box-shadow: 0 3px 0 #4a1515, 0 5px 20px rgba(201,162,39,0.4); }
+$('note-close').addEventListener('click', () => {
+  $('note').hidden = true;
+});
+
+// ===== СБРОС =====
+function resetFrontProgress(frontId) {
+  state.progress[frontId] = { correctCount: 0, errorCount: 0, answeredIndices: [] };
 }
 
-/* ===== ЗАГОЛОВКИ ===== */
-.main-title {
-  font-family: var(--font-main);
-  font-size: clamp(24px, 5vw, 40px);
-  text-align: center;
-  margin: 20px 0 8px;
-  color: var(--accent-soft);
-  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-  letter-spacing: 2px;
+// ===== ПОБЕДА =====
+function showVictory() {
+  drawVictoryCanvas();
+  showScreen('screen-victory');
 }
 
-.subtitle {
-  text-align: center;
-  font-size: 14px;
-  margin-bottom: 28px;
-  opacity: 0.8;
-  font-style: italic;
+function drawVictoryCanvas() {
+  const canvas = $('victory-canvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  const cx = w / 2;
+  const top = 40;
+  const bottom = h - 30;
+  const left = cx - 140;
+  const right = cx + 140;
+
+  function shieldPath(inset) {
+    ctx.beginPath();
+    ctx.moveTo(left + inset, top + inset);
+    ctx.lineTo(right - inset, top + inset);
+    ctx.lineTo(right - inset, top + (bottom - top) * 0.55);
+    ctx.quadraticCurveTo(right - inset, bottom - inset, cx, bottom - inset);
+    ctx.quadraticCurveTo(left + inset, bottom - inset, left + inset, top + (bottom - top) * 0.55);
+    ctx.closePath();
+  }
+
+  const metalGrad = ctx.createLinearGradient(left, top, right, bottom);
+  metalGrad.addColorStop(0, '#8a7a5a');
+  metalGrad.addColorStop(0.3, '#c9a227');
+  metalGrad.addColorStop(0.5, '#e8d18a');
+  metalGrad.addColorStop(0.7, '#c9a227');
+  metalGrad.addColorStop(1, '#8a7a5a');
+  ctx.fillStyle = metalGrad;
+  shieldPath(0);
+  ctx.fill();
+
+  const fieldGrad = ctx.createLinearGradient(cx, top, cx, bottom);
+  fieldGrad.addColorStop(0, '#a83232');
+  fieldGrad.addColorStop(0.5, '#8b2e2e');
+  fieldGrad.addColorStop(1, '#6b1f1f');
+  ctx.fillStyle = fieldGrad;
+  shieldPath(14);
+  ctx.fill();
+
+  ctx.strokeStyle = 'rgba(201,162,39,0.5)';
+  ctx.lineWidth = 2;
+  shieldPath(24);
+  ctx.stroke();
+
+  ctx.strokeStyle = 'rgba(201,162,39,0.35)';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(cx, top + 50);
+  ctx.lineTo(cx, bottom - 60);
+  ctx.moveTo(cx - 80, top + 110);
+  ctx.lineTo(cx + 80, top + 110);
+  ctx.stroke();
+
+  const rivets = [
+    [left + 30, top + 30],
+    [right - 30, top + 30],
+    [left + 30, top + (bottom - top) * 0.55],
+    [right - 30, top + (bottom - top) * 0.55]
+  ];
+  rivets.forEach(([x, y]) => {
+    const rg = ctx.createRadialGradient(x - 2, y - 2, 1, x, y, 6);
+    rg.addColorStop(0, '#f0e0a0');
+    rg.addColorStop(0.6, '#c9a227');
+    rg.addColorStop(1, '#6a5020');
+    ctx.fillStyle = rg;
+    ctx.beginPath();
+    ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  ctx.fillStyle = '#f0e0a0';
+  ctx.font = 'bold 26px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.shadowColor = 'rgba(0,0,0,0.7)';
+  ctx.shadowBlur = 4;
+  ctx.shadowOffsetY = 2;
+  ctx.fillText('ФРОНТ УДЕРЖАН', cx, top + 80);
+
+  ctx.font = '16px Georgia, serif';
+  ctx.fillStyle = '#e8dcc8';
+  ctx.fillText(state.currentFront.title, cx, top + 110);
+
+  ctx.font = '13px Georgia, serif';
+  ctx.fillStyle = 'rgba(232,220,200,0.8)';
+  ctx.fillText('КПЦ им. Ефима Честнякова', cx, bottom - 45);
+
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+
+  const dataUrl = canvas.toDataURL('image/png');
+  document.querySelector('meta[property="og:image"]').setAttribute('content', dataUrl);
+  document.querySelector('meta[property="vk:image"]').setAttribute('content', dataUrl);
 }
 
-/* ===== КАРТОЧКИ ФРОНТОВ ===== */
-.fronts {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+// ===== ЩИТ С ДВУМЯ МЕЧАМИ (стартовый экран) =====
+function drawIntroShield() {
+  const canvas = document.getElementById('intro-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const cx = w / 2;
+
+  ctx.clearRect(0, 0, w, h);
+
+  function drawSword(angle, offsetX) {
+    ctx.save();
+    ctx.translate(cx + offsetX, h / 2 + 10);
+    ctx.rotate(angle);
+
+    const bladeGrad = ctx.createLinearGradient(0, -90, 0, 40);
+    bladeGrad.addColorStop(0, '#e8e8e8');
+    bladeGrad.addColorStop(0.5, '#b0b0b0');
+    bladeGrad.addColorStop(1, '#808080');
+    ctx.fillStyle = bladeGrad;
+    ctx.beginPath();
+    ctx.moveTo(0, -95);
+    ctx.lineTo(-6, -80);
+    ctx.lineTo(-6, 40);
+    ctx.lineTo(6, 40);
+    ctx.lineTo(6, -80);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#555';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    const guardGrad = ctx.createLinearGradient(-25, 0, 25, 0);
+    guardGrad.addColorStop(0, '#8a7a5a');
+    guardGrad.addColorStop(0.5, '#e8d18a');
+    guardGrad.addColorStop(1, '#8a7a5a');
+    ctx.fillStyle = guardGrad;
+    ctx.fillRect(-25, 40, 50, 8);
+
+    ctx.fillStyle = '#5a3a1a';
+    ctx.fillRect(-5, 48, 10, 30);
+    ctx.strokeStyle = '#3a2510';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 4; i++) {
+      ctx.beginPath();
+      ctx.moveTo(-5, 52 + i * 7);
+      ctx.lineTo(5, 52 + i * 7);
+      ctx.stroke();
+    }
+
+    const pommelGrad = ctx.createRadialGradient(0, 82, 1, 0, 82, 8);
+    pommelGrad.addColorStop(0, '#f0e0a0');
+    pommelGrad.addColorStop(1, '#6a5020');
+    ctx.fillStyle = pommelGrad;
+    ctx.beginPath();
+    ctx.arc(0, 82, 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  drawSword(-0.4, -35);
+  drawSword(0.4, 35);
+
+  const top = 50;
+  const bottom = h - 20;
+  const left = cx - 75;
+  const right = cx + 75;
+
+  function shieldPath(inset) {
+    ctx.beginPath();
+    ctx.moveTo(left + inset, top + inset);
+    ctx.lineTo(right - inset, top + inset);
+    ctx.lineTo(right - inset, top + (bottom - top) * 0.55);
+    ctx.quadraticCurveTo(right - inset, bottom - inset, cx, bottom - inset);
+    ctx.quadraticCurveTo(left + inset, bottom - inset, left + inset, top + (bottom - top) * 0.55);
+    ctx.closePath();
+  }
+
+  const metalGrad = ctx.createLinearGradient(left, top, right, bottom);
+  metalGrad.addColorStop(0, '#8a7a5a');
+  metalGrad.addColorStop(0.3, '#c9a227');
+  metalGrad.addColorStop(0.5, '#e8d18a');
+  metalGrad.addColorStop(0.7, '#c9a227');
+  metalGrad.addColorStop(1, '#8a7a5a');
+  ctx.fillStyle = metalGrad;
+  shieldPath(0);
+  ctx.fill();
+
+  const fieldGrad = ctx.createLinearGradient(cx, top, cx, bottom);
+  fieldGrad.addColorStop(0, '#a83232');
+  fieldGrad.addColorStop(0.5, '#8b2e2e');
+  fieldGrad.addColorStop(1, '#6b1f1f');
+  ctx.fillStyle = fieldGrad;
+  shieldPath(10);
+  ctx.fill();
+
+  ctx.strokeStyle = 'rgba(201,162,39,0.5)';
+  ctx.lineWidth = 2;
+  shieldPath(18);
+  ctx.stroke();
+
+  ctx.fillStyle = 'rgba(232,209,138,0.85)';
+  ctx.font = 'bold 38px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🦅', cx, h / 2 + 5);
+
+  const rivets = [
+    [left + 18, top + 18],
+    [right - 18, top + 18],
+    [left + 18, top + (bottom - top) * 0.55],
+    [right - 18, top + (bottom - top) * 0.55]
+  ];
+  rivets.forEach(([x, y]) => {
+    const rg = ctx.createRadialGradient(x - 1, y - 1, 1, x, y, 5);
+    rg.addColorStop(0, '#f0e0a0');
+    rg.addColorStop(0.6, '#c9a227');
+    rg.addColorStop(1, '#6a5020');
+    ctx.fillStyle = rg;
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.fill();
+  });
 }
 
-@media (max-width: 640px) {
-  .fronts { grid-template-columns: 1fr; }
-}
+// ===== ДЫМ И УГЛИ =====
+(function initSmoke() {
+  const canvas = document.getElementById('smoke-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let w, h;
 
-.front-card {
-  background: linear-gradient(180deg, #2e241c 0%, #1f1913 100%);
-  border: 2px solid var(--panel-border);
-  border-radius: 4px;
-  padding: 22px 14px;
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
-  position: relative;
-  box-shadow: inset 0 0 0 1px rgba(201,162,39,0.15);
-}
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    w = canvas.clientWidth;
+    h = canvas.clientHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  window.addEventListener('resize', resize);
 
-.front-card::before {
-  content: "";
-  position: absolute;
-  top: 4px; left: 4px; right: 4px; bottom: 4px;
-  border: 1px solid rgba(201,162,39,0.25);
-  border-radius: 2px;
-  pointer-events: none;
-}
+  const smokeParticles = [];
+  const SMOKE_COUNT = 40;
 
-.front-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--accent-soft);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 15px rgba(201,162,39,0.2);
-}
+  function createSmoke() {
+    return {
+      x: Math.random() * w,
+      y: h + Math.random() * 20,
+      r: 30 + Math.random() * 60,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: -0.2 - Math.random() * 0.5,
+      life: 0,
+      maxLife: 300 + Math.random() * 300,
+      alpha: 0.08 + Math.random() * 0.12
+    };
+  }
 
-.front-card:active {
-  transform: translateY(-1px) scale(0.98);
-}
+  for (let i = 0; i < SMOKE_COUNT; i++) {
+    const p = createSmoke();
+    p.y = Math.random() * h;
+    p.life = Math.random() * p.maxLife;
+    smokeParticles.push(p);
+  }
 
-.front-icon { font-size: 40px; display: block; margin-bottom: 10px; }
-.front-title { font-family: var(--font-main); font-size: 18px; margin-bottom: 6px; color: var(--accent-soft); letter-spacing: 1px; }
-.front-desc { font-size: 12px; opacity: 0.7; margin-bottom: 8px; }
-.front-progress { 
-  font-size: 12px; 
-  color: var(--accent-soft); 
-  border-top: 1px solid rgba(201,162,39,0.2); 
-  padding-top: 8px; 
-  margin-top: 4px; 
-}
+  const embers = [];
+  const EMBER_COUNT = 18;
 
-/* ===== ЗНАМЯ ===== */
-.banner {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 24px;
-  height: 32px;
-  padding: 3px;
-  background: #1a1512;
-  border: 1px solid var(--panel-border);
-  border-radius: 3px;
-}
+  function createEmber() {
+    return {
+      x: Math.random() * w,
+      y: h - Math.random() * 10,
+      r: 1 + Math.random() * 2,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: -0.4 - Math.random() * 0.8,
+      life: 0,
+      maxLife: 120 + Math.random() * 180,
+      hue: 20 + Math.random() * 20
+    };
+  }
 
-.banner-segment {
-  flex: 1;
-  background: #2a221c;
-  border: 1px solid #3a2f24;
-  border-radius: 2px;
-  transition: background 0.4s, box-shadow 0.4s;
-}
+  for (let i = 0; i < EMBER_COUNT; i++) {
+    const e = createEmber();
+    e.life = Math.random() * e.maxLife;
+    embers.push(e);
+  }
 
-.banner-segment.filled { 
-  background: linear-gradient(180deg, #5a8c5a 0%, #3a5c3a 100%);
-  box-shadow: 0 0 8px rgba(74,124,74,0.5);
-  animation: pulse 0.6s ease;
-}
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
 
-.banner-segment.cracked { 
-  background: linear-gradient(180deg, #a83232 0%, #6b1f1f 100%);
-  box-shadow: 0 0 8px rgba(139,46,46,0.5);
-}
+    smokeParticles.forEach((p, i) => {
+      p.life++;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.r += 0.15;
 
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.08); }
-  100% { transform: scale(1); }
-}
+      if (p.life > p.maxLife) {
+        smokeParticles[i] = createSmoke();
+        return;
+      }
 
-/* ===== ВОПРОС ===== */
-.question-text {
-  font-family: var(--font-main);
-  font-size: clamp(18px, 3.5vw, 24px);
-  margin-bottom: 22px;
-  line-height: 1.4;
-  padding: 12px 0;
-  border-top: 1px solid rgba(201,162,39,0.15);
-  border-bottom: 1px solid rgba(201,162,39,0.15);
-}
+      const lifeRatio = p.life / p.maxLife;
+      let alpha = p.alpha;
+      if (lifeRatio < 0.2) alpha *= lifeRatio / 0.2;
+      if (lifeRatio > 0.7) alpha *= (1 - lifeRatio) / 0.3;
 
-/* ===== ВАРИАНТЫ ОТВЕТОВ ===== */
-.options { display: flex; flex-direction: column; gap: 10px; }
+      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+      grad.addColorStop(0, `rgba(120, 100, 85, ${alpha})`);
+      grad.addColorStop(0.5, `rgba(90, 75, 65, ${alpha * 0.6})`);
+      grad.addColorStop(1, `rgba(60, 50, 45, 0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
 
-.option-btn {
-  background: linear-gradient(180deg, #2e241c 0%, #1f1913 100%);
-  border: 2px solid var(--panel-border);
-  color: var(--text);
-  padding: 14px 18px;
-  font-size: 16px;
-  text-align: left;
-  cursor: pointer;
-  border-radius: 4px;
-  font-family: var(--font-ui);
-  transition: border-color 0.2s, background 0.2s, transform 0.1s;
-  position: relative;
-  box-shadow: inset 0 0 0 1px rgba(201,162,39,0.1);
-}
+    embers.forEach((e, i) => {
+      e.life++;
+      e.x += e.vx;
+      e.y += e.vy;
+      e.vy *= 0.995;
 
-.option-btn::before {
-  content: "▸";
-  color: var(--accent-soft);
-  margin-right: 10px;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
+      if (e.life > e.maxLife || e.y < -10) {
+        embers[i] = createEmber();
+        return;
+      }
 
-.option-btn:hover:not(:disabled) { 
-  border-color: var(--accent-soft);
-  background: linear-gradient(180deg, #3a2e22 0%, #2a2018 100%);
-}
+      const lifeRatio = e.life / e.maxLife;
+      const alpha = Math.sin(lifeRatio * Math.PI) * 0.9;
 
-.option-btn:hover:not(:disabled)::before { opacity: 1; }
+      ctx.fillStyle = `hsla(${e.hue}, 90%, 60%, ${alpha})`;
+      ctx.shadowColor = `hsla(${e.hue}, 90%, 60%, 0.8)`;
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    });
 
-.option-btn:active:not(:disabled) { transform: scale(0.99); }
+    requestAnimationFrame(draw);
+  }
 
-.option-btn.correct { 
-  border-color: var(--green); 
-  background: linear-gradient(180deg, #2a3a2a 0%, #1f2a1f 100%);
-  box-shadow: 0 0 12px rgba(74,124,74,0.3);
-}
-.option-btn.wrong { 
-  border-color: var(--red); 
-  background: linear-gradient(180deg, #3a2222 0%, #2a1818 100%);
-  box-shadow: 0 0 12px rgba(139,46,46,0.3);
-}
-.option-btn:disabled { cursor: default; }
+  draw();
+})();
 
-/* ===== ЗАМЕТКА ===== */
-.note {
-  margin-top: 18px;
-  padding: 14px 18px;
-  background: linear-gradient(180deg, #332a22 0%, #241d16 100%);
-  border-left: 4px solid var(--accent-soft);
-  border-radius: 2px;
-  position: relative;
-  font-size: 14px;
-  line-height: 1.5;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-  animation: slideIn 0.3s ease;
-}
+// ===== КНОПКИ =====
+$('btn-back-select').addEventListener('click', () => {
+  showScreen('screen-select');
+});
 
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+$('btn-restart').addEventListener('click', () => {
+  state.attempt++;
+  if (state.currentFront) {
+    resetFrontProgress(state.currentFront.id);
+  }
+  updateHud();
+  renderFronts();
+  showScreen('screen-select');
+});
 
-.note-close {
-  position: absolute;
-  top: 4px; right: 8px;
-  background: none; border: none;
-  color: var(--text); font-size: 20px;
-  cursor: pointer; opacity: 0.6;
-}
+$('btn-another').addEventListener('click', () => {
+  showScreen('screen-select');
+});
 
-.note-close:hover { opacity: 1; }
+$('btn-share-vk').addEventListener('click', () => {
+  const url = encodeURIComponent(window.location.href);
+  const title = encodeURIComponent('Я удержал фронт! — КПЦ им. Ефима Честнякова');
+  const comment = encodeURIComponent(
+    `Я прошёл фронт «${state.currentFront.title}» в игре ко Дню народного единства! ` +
+    `7 из 7 без ошибок. А ты сможешь? 🛡️`
+  );
+  window.open(
+    `https://vk.com/share.php?url=${url}&title=${title}&comment=${comment}`,
+    '_blank',
+    'width=600,height=500'
+  );
+});
 
-/* ===== РЕЗУЛЬТАТЫ ===== */
-.result-title {
-  font-family: var(--font-main);
-  font-size: clamp(22px, 4vw, 32px);
-  text-align: center;
-  margin: 28px 0 14px;
-  color: var(--accent-soft);
-  letter-spacing: 1px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-}
+// ===== СТАРТ =====
+renderFronts();
+updateHud();
+showScreen('screen-intro');
 
-.result-text { text-align: center; font-size: 16px; margin-bottom: 26px; line-height: 1.5; }
+document.getElementById('btn-start').addEventListener('click', () => {
+  tryStartMusic();
+  showScreen('screen-select');
+});
 
-/* ===== КНОПКИ ===== */
-.btn {
-  display: block;
-  margin: 0 auto 12px;
-  background: linear-gradient(180deg, #a83232 0%, #6b1f1f 100%);
-  border: 2px solid var(--accent-soft);
-  color: var(--text);
-  padding: 12px 32px;
-  font-size: 16px;
-  font-family: var(--font-ui);
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
-  position: relative;
-  box-shadow: 0 3px 0 #4a1515, 0 5px 10px rgba(0,0,0,0.4);
-  letter-spacing: 0.5px;
-}
-
-.btn:hover { 
-  background: linear-gradient(180deg, #c03a3a 0%, #8b2e2e 100%);
-  box-shadow: 0 3px 0 #4a1515, 0 5px 15px rgba(168,50,50,0.4);
-}
-
-.btn:active { 
-  transform: translateY(2px); 
-  box-shadow: 0 1px 0 #4a1515, 0 2px 5px rgba(0,0,0,0.4);
-}
-
-.btn-secondary { 
-  background: linear-gradient(180deg, #3a2e22 0%, #241d16 100%);
-  box-shadow: 0 3px 0 #1a1512, 0 5px 10px rgba(0,0,0,0.4);
-}
-
-.btn-secondary:hover { 
-  background: linear-gradient(180deg, #4a3a2a 0%, #2e241c 100%);
-  box-shadow: 0 3px 0 #1a1512, 0 5px 15px rgba(0,0,0,0.5);
-}
-
-.share-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-
-/* ===== CANVAS-ЩИТ ===== */
-#victory-canvas {
-  display: block;
-  margin: 0 auto 18px;
-  max-width: 100%;
-  height: auto;
-  filter: drop-shadow(0 6px 15px rgba(0,0,0,0.6));
-}
-
-/* ===== ЛЕНТА ВРЕМЕНИ ===== */
-.timeline {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  font-family: var(--font-main);
-  font-size: 14px;
-  color: var(--accent-soft);
-  margin-bottom: 18px;
-  flex-wrap: wrap;
-  letter-spacing: 1px;
-}
-
-.timeline span { position: relative; }
-.timeline span:not(:last-child)::after {
-  content: "→";
-  margin-left: 16px;
-  opacity: 0.5;
-}
+drawIntroShield();
